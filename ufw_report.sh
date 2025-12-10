@@ -4,6 +4,7 @@
 set -euo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 OUT_FILE="${UFW_MD_OUT:-$PWD/ufw_report.md}"
+PLOTS_DIR="${UFW_PLOTS_DIR:-$PWD/ufw_plots}"
 
 python3 "${SCRIPT_DIR}/analyze_ufw.py" \
   --log /var/log/ufw.log \
@@ -13,4 +14,5 @@ python3 "${SCRIPT_DIR}/analyze_ufw.py" \
   --geo \
   --geo-limit 15 \
   --md-out "${OUT_FILE}" \
+  --plots-dir "${PLOTS_DIR}" \
   "$@"

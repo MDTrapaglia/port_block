@@ -17,6 +17,7 @@ import collections
 import datetime as dt
 import ipaddress
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Dict, Iterable, Optional, Tuple
@@ -63,6 +64,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--md-out",
         help="Ruta de archivo Markdown para guardar el reporte (default: no genera archivo)",
+    )
+    parser.add_argument(
+        "--plots-dir",
+        help="Directorio donde guardar gráficos (jpg). Si no se pasa, no se generan gráficos.",
     )
     return parser.parse_args()
 
@@ -201,6 +206,63 @@ def md_table(
     return "\n".join(lines) + "\n"
 
 
+def _get_plt():
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    return plt
+
+
+def plot_bar(counter: collections.Counter, outfile: Path, title: str, xlabel: str, limit: int = 10):
+    if not counter:
+        return None
+    plt = _get_plt()
+    items = counter.most_common(limit)
+    labels = [str(i[0]) for i in items]
+    counts = [i[1] for i in items]
+    outfile = Path(outfile)
+    outfile.parent.mkdir(parents=True, exist_ok=True)
+
+    fig, ax = plt.subplots(figsize=(9, 4))
+    ax.bar(range(len(labels)), counts, color="#1f77b4")
+    ax.set_title(title)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel("Conteo")
+    ax.set_xticks(range(len(labels)))
+    ax.set_xticklabels(labels, rotation=45, ha="right")
+    ax.grid(True, axis="y", linestyle="--", alpha=0.4)
+    fig.tight_layout()
+    fig.savefig(outfile, dpi=150)
+    plt.close(fig)
+    return outfile
+
+
+def plot_hourly(hourly: collections.Counter, outfile: Path):
+    if not hourly:
+        return None
+    plt = _get_plt()
+    items = sorted(hourly.items())
+    labels = [h.strftime("%m-%d %Hh") for h, _ in items]
+    counts = [c for _, c in items]
+    outfile = Path(outfile)
+    outfile.parent.mkdir(parents=True, exist_ok=True)
+
+    fig, ax = plt.subplots(figsize=(10, 4))
+    ax.plot(range(len(labels)), counts, marker="o", color="#d62728")
+    ax.set_title("Bloqueos por hora (UTC)")
+    ax.set_xlabel("Hora")
+    ax.set_ylabel("Conteo")
+    ax.set_xticks(range(len(labels)))
+    ax.set_xticklabels(labels, rotation=45, ha="right")
+    ax.grid(True, linestyle="--", alpha=0.4)
+    fig.tight_layout()
+    fig.savefig(outfile, dpi=150)
+    plt.close(fig)
+    return outfile
+
+
 def main():
     args = parse_args()
     log_path = Path(args.log)
@@ -213,6 +275,7 @@ def main():
 
     blocks = list(iter_blocks(log_path, since=since_dt))
     total, ports, ips, pairs, hourly = summarize(blocks)
+    plot_paths = []
 
     print(f"Archivo: {log_path}")
     if args.since_hours:
@@ -237,6 +300,23 @@ def main():
             location = geo_lookup(ip, cache)
             print(f"  {ip:<15} {count:<5} {location}")
         save_geo_cache(cache_path, cache)
+
+    if args.plots_dir:
+        plots_dir = Path(args.plots_dir)
+        ports_img = plot_bar(ports, plots_dir / "ufw_top_ports.jpg", "Top puertos destino", "Puerto", args.top_ports)
+        ips_img = plot_bar(ips, plots_dir / "ufw_top_ips.jpg", "Top IPs origen", "IP", args.top_ips)
+        hourly_img = plot_hourly(hourly, plots_dir / "ufw_hourly.jpg")
+        for label, img in [
+            ("Top puertos destino", ports_img),
+            ("Top IPs origen", ips_img),
+            ("Bloqueos por hora (UTC)", hourly_img),
+        ]:
+            if img:
+                plot_paths.append((label, Path(img)))
+        if plot_paths:
+            print("\nGráficos guardados:")
+            for label, img in plot_paths:
+                print(f"  {label}: {img}")
 
     if args.md_out:
         md_lines = ["# UFW Block Report", ""]
@@ -288,6 +368,14 @@ def main():
             else:
                 md_lines.append("_Sin datos_\n")
             save_geo_cache(cache_path, cache)
+
+        if plot_paths:
+            md_lines.append("## Gráficos")
+            md_dir = Path(args.md_out).parent
+            for label, img in plot_paths:
+                rel = os.path.relpath(img, md_dir)
+                md_lines.append(f"![{label}]({rel})")
+            md_lines.append("")
 
         Path(args.md_out).write_text("\n".join(md_lines))
         print(f"\nReporte Markdown generado en: {args.md_out}")
