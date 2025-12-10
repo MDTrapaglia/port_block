@@ -1,23 +1,198 @@
 {
-  "100.24.10.103": "United States / Virginia / Ashburn / AWS EC2 (us-east-1)",
+  "100.24.10.103": {
+    "city": null,
+    "country": null,
+    "label": "United States / Virginia / Ashburn / AWS EC2 (us-east-1)",
+    "lat": 39.0438,
+    "lon": -77.4874
+  },
+  "103.99.170.132": {
+    "asn": null,
+    "city": null,
+    "country": null,
+    "isp": null,
+    "label": "United States / California / San Jose / WIZ K K",
+    "lat": 37.3388,
+    "lon": -121.8916,
+    "org": null
+  },
+  "109.236.61.34": {
+    "asn": null,
+    "city": "Amsterdam",
+    "country": "The Netherlands",
+    "isp": null,
+    "label": "The Netherlands / North Holland / Amsterdam / ColocationX Ltd",
+    "lat": 52.3856,
+    "lon": 4.84335,
+    "org": null
+  },
   "120.85.117.185": "China / Guangdong / Guangzhou",
-  "151.101.218.73": "Argentina / Buenos Aires F.D. / Buenos Aires / Fastly, Inc.",
-  "17.57.144.152": "United States / California / Cupertino / Apple Inc",
+  "147.229.8.240": {
+    "asn": null,
+    "city": null,
+    "country": null,
+    "isp": null,
+    "label": "Czechia / South Moravian / Ti\u0161nov / VUTBR",
+    "lat": 49.347,
+    "lon": 16.426,
+    "org": null
+  },
+  "149.50.103.48": {
+    "asn": null,
+    "city": "Warsaw",
+    "country": "Poland",
+    "isp": null,
+    "label": "Poland / Mazovia / Warsaw / Meverywhere sp.zo.o",
+    "lat": 52.2299,
+    "lon": 21.0093,
+    "org": null
+  },
+  "151.101.218.73": {
+    "asn": null,
+    "city": null,
+    "country": null,
+    "isp": null,
+    "label": "Argentina / Buenos Aires F.D. / Buenos Aires / Fastly, Inc.",
+    "lat": -34.6142,
+    "lon": -58.3811,
+    "org": null
+  },
+  "17.57.144.152": {
+    "city": null,
+    "country": null,
+    "label": "United States / California / Cupertino / Apple Inc",
+    "lat": 37.3322,
+    "lon": -122.011
+  },
   "176.65.148.81": "The Netherlands / Limburg / Eygelshoven / Pfcloud UG",
-  "184.31.2.80": "Argentina / Buenos Aires F.D. / Buenos Aires / Akamai Technologies, Inc.",
-  "185.133.35.13": "Brazil / S\u00e3o Paulo / Casa Verde / Linked Store Brasil Criacao E Desenvol De Software",
-  "185.133.35.14": "Brazil / S\u00e3o Paulo / Casa Verde / Linked Store Brasil Criacao E Desenvol De Software",
+  "184.31.2.80": {
+    "asn": null,
+    "city": null,
+    "country": null,
+    "isp": null,
+    "label": "Argentina / Buenos Aires F.D. / Buenos Aires / Akamai Technologies, Inc.",
+    "lat": -34.6142,
+    "lon": -58.3811,
+    "org": null
+  },
+  "185.133.35.13": {
+    "asn": null,
+    "city": null,
+    "country": null,
+    "isp": null,
+    "label": "Brazil / S\u00e3o Paulo / Casa Verde / Linked Store Brasil Criacao E Desenvol De Software",
+    "lat": -23.5124,
+    "lon": -46.6577,
+    "org": null
+  },
+  "185.133.35.14": {
+    "asn": null,
+    "city": null,
+    "country": null,
+    "isp": null,
+    "label": "Brazil / S\u00e3o Paulo / Casa Verde / Linked Store Brasil Criacao E Desenvol De Software",
+    "lat": -23.5124,
+    "lon": -46.6577,
+    "org": null
+  },
   "193.34.213.150": "Poland / Mazovia / Warsaw / SKYTECHNOLOGY",
-  "194.180.49.70": "Germany / Bavaria / Berngau / HostSlick",
+  "194.180.49.70": {
+    "asn": null,
+    "city": null,
+    "country": null,
+    "isp": null,
+    "label": "Germany / Bavaria / Berngau / HostSlick",
+    "lat": 49.2378,
+    "lon": 11.3715,
+    "org": null
+  },
   "20.98.152.158": "United States / Iowa / Des Moines / Microsoft Azure Cloud (centralus)",
   "206.168.34.128": "United States / Illinois / Chicago / Censys, Inc.",
+  "216.180.246.43": {
+    "asn": null,
+    "city": "Massy",
+    "country": "France",
+    "isp": null,
+    "label": "France / \u00cele-de-France / Massy",
+    "lat": 48.7217,
+    "lon": 2.28306,
+    "org": null
+  },
   "23.94.31.42": "United States / New York / Buffalo",
-  "54.224.145.4": "United States / Virginia / Ashburn / AWS EC2 (us-east-1)",
+  "54.224.145.4": {
+    "asn": null,
+    "city": null,
+    "country": null,
+    "isp": null,
+    "label": "United States / Virginia / Ashburn / AWS EC2 (us-east-1)",
+    "lat": 39.0438,
+    "lon": -77.4874,
+    "org": null
+  },
   "59.127.12.31": "Taiwan / Pingtung / Pingtung City / Chunghwa Telecom Co. Ltd.",
-  "79.124.62.230": "Seychelles / La Rivi\u00e8re Anglaise / Victoria / Internet Solutions & Innovations LTD",
-  "85.11.183.6": "United Kingdom / England / London / Sofcompany speedy",
+  "79.124.62.126": {
+    "asn": "AS207812 DM AUTO EOOD",
+    "city": "Victoria",
+    "country": "Seychelles",
+    "isp": "DM AUTO EOOD",
+    "label": "Seychelles / La Rivi\u00e8re Anglaise / Victoria / Internet Solutions & Innovations LTD",
+    "lat": -4.62602,
+    "lon": 55.4542,
+    "org": "Internet Solutions & Innovations LTD"
+  },
+  "79.124.62.230": {
+    "asn": null,
+    "city": null,
+    "country": null,
+    "isp": null,
+    "label": "Seychelles / La Rivi\u00e8re Anglaise / Victoria / Internet Solutions & Innovations LTD",
+    "lat": -4.62602,
+    "lon": 55.4542,
+    "org": null
+  },
+  "85.11.183.6": {
+    "city": null,
+    "country": null,
+    "label": "United Kingdom / England / London / Sofcompany speedy",
+    "lat": 51.5081,
+    "lon": -0.1278
+  },
   "85.217.140.7": "France / \u00cele-de-France / Paris / Modat B.V",
+  "85.217.149.12": {
+    "asn": null,
+    "city": null,
+    "country": null,
+    "isp": null,
+    "label": "United States / New York / New York / Modat B.V",
+    "lat": 40.7128,
+    "lon": -74.006,
+    "org": null
+  },
   "85.217.149.13": "United States / New York / New York / Modat B.V",
   "85.217.149.22": "United States / New York / New York / Modat B.V",
-  "90.156.232.12": "Russia / Moscow / Moscow / VK Services"
+  "85.217.149.26": {
+    "asn": "AS209334 Modat B.V.",
+    "city": "New York",
+    "country": "United States",
+    "isp": "Modat B.V.",
+    "label": "United States / New York / New York / Modat B.V",
+    "lat": 40.7128,
+    "lon": -74.006,
+    "org": "Modat B.V"
+  },
+  "85.217.149.9": {
+    "city": null,
+    "country": null,
+    "label": "United States / New York / New York / Modat B.V",
+    "lat": 40.7128,
+    "lon": -74.006
+  },
+  "90.156.232.12": "Russia / Moscow / Moscow / VK Services",
+  "95.93.214.23": {
+    "city": null,
+    "country": null,
+    "label": "Portugal / Lisbon / Alg\u00e9s / TVCABO-Portugal",
+    "lat": 38.7019,
+    "lon": -9.2243
+  }
 }
