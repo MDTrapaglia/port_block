@@ -60,6 +60,10 @@ def parse_args() -> argparse.Namespace:
         default=15,
         help="Máximo de IPs a geolocalizar (default: 15)",
     )
+    parser.add_argument(
+        "--md-out",
+        help="Ruta de archivo Markdown para guardar el reporte (default: no genera archivo)",
+    )
     return parser.parse_args()
 
 
@@ -180,6 +184,23 @@ def print_counter(counter: collections.Counter, title: str, limit: int, fmt=str)
         print(f"  {fmt(item):<25} {count}")
 
 
+def md_table(
+    counter: collections.Counter,
+    header_label: str,
+    limit: int,
+    fmt_item=str,
+) -> str:
+    if not counter:
+        return "_Sin datos_\n"
+    lines = [
+        f"| {header_label} | Conteo |",
+        "| --- | ---: |",
+    ]
+    for item, count in counter.most_common(limit):
+        lines.append(f"| {fmt_item(item)} | {count} |")
+    return "\n".join(lines) + "\n"
+
+
 def main():
     args = parse_args()
     log_path = Path(args.log)
@@ -216,6 +237,60 @@ def main():
             location = geo_lookup(ip, cache)
             print(f"  {ip:<15} {count:<5} {location}")
         save_geo_cache(cache_path, cache)
+
+    if args.md_out:
+        md_lines = ["# UFW Block Report", ""]
+        md_lines.append(f"- Log: `{log_path}`")
+        if args.since_hours:
+            md_lines.append(f"- Ventana: últimas {args.since_hours} horas")
+        md_lines.append(f"- Total de bloqueos: {total}")
+        md_lines.append(f"- IPs de origen únicas: {len(ips)}")
+        md_lines.append(f"- Puertos destino únicos: {len(ports)}")
+        md_lines.append("")
+
+        md_lines.append("## Top puertos destino")
+        md_lines.append(md_table(ports, "Puerto destino", args.top_ports))
+
+        md_lines.append("## Top IPs origen")
+        md_lines.append(md_table(ips, "IP origen", args.top_ips))
+
+        md_lines.append("## Top IP origen -> puerto destino")
+        md_lines.append(
+            md_table(
+                pairs,
+                "IP origen -> puerto",
+                args.top_ips,
+                fmt_item=lambda x: f"{x[0]} -> {x[1]}",
+            )
+        )
+
+        md_lines.append("## Bloqueos por hora (UTC)")
+        if hourly:
+            md_lines.append("| Hora | Conteo |")
+            md_lines.append("| --- | ---: |")
+            for hour, count in sorted(hourly.items()):
+                md_lines.append(f"| {hour}:00 | {count} |")
+            md_lines.append("")
+        else:
+            md_lines.append("_Sin datos_\n")
+
+        if args.geo:
+            cache_path = Path(".ufw_geo_cache.json")
+            cache = load_geo_cache(cache_path)
+            md_lines.append(f"## Geolocalización (máx {args.geo_limit} IPs)")
+            if ips:
+                md_lines.append("| IP origen | Conteo | Ubicación |")
+                md_lines.append("| --- | ---: | --- |")
+                for ip, count in ips.most_common(args.geo_limit):
+                    location = geo_lookup(ip, cache)
+                    md_lines.append(f"| {ip} | {count} | {location} |")
+                md_lines.append("")
+            else:
+                md_lines.append("_Sin datos_\n")
+            save_geo_cache(cache_path, cache)
+
+        Path(args.md_out).write_text("\n".join(md_lines))
+        print(f"\nReporte Markdown generado en: {args.md_out}")
 
 
 if __name__ == "__main__":
