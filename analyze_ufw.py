@@ -130,10 +130,12 @@ def _coerce_geo_record(raw: object) -> GeoRecord:
             "label": raw.get("label") or raw.get("location") or "lookup_failed",
             "lat": raw.get("lat"),
             "lon": raw.get("lon"),
+            "country": raw.get("country"),
+            "city": raw.get("city"),
         }
     if isinstance(raw, str):
-        return {"label": raw, "lat": None, "lon": None}
-    return {"label": "lookup_failed", "lat": None, "lon": None}
+        return {"label": raw, "lat": None, "lon": None, "country": None, "city": None}
+    return {"label": "lookup_failed", "lat": None, "lon": None, "country": None, "city": None}
 
 
 def geo_lookup(ip: str, cache: Dict[str, object]) -> GeoRecord:
@@ -167,6 +169,8 @@ def geo_lookup(ip: str, cache: Dict[str, object]) -> GeoRecord:
         "label": " / ".join([p for p in parts if p]),
         "lat": payload.get("lat"),
         "lon": payload.get("lon"),
+        "country": payload.get("country"),
+        "city": payload.get("city"),
     }
     return cache[ip]  # type: ignore[return-value]
 
@@ -314,12 +318,13 @@ def cluster_geo_points(points: List[Dict[str, object]], cell_size: float = 2.5) 
         key = (round(lat / cell_size), round(lon / cell_size))
         bucket = buckets.setdefault(
             key,
-            {"lat_sum": 0.0, "lon_sum": 0.0, "count": 0, "ips": []},
+            {"lat_sum": 0.0, "lon_sum": 0.0, "count": 0, "labels": []},
         )
         bucket["lat_sum"] = bucket.get("lat_sum", 0.0) + lat * count  # type: ignore[assignment]
         bucket["lon_sum"] = bucket.get("lon_sum", 0.0) + lon * count  # type: ignore[assignment]
         bucket["count"] = bucket.get("count", 0) + count  # type: ignore[assignment]
-        bucket["ips"].append((p.get("ip") or p.get("label") or "", count))  # type: ignore[attr-defined]
+        label = p.get("city") or p.get("country") or p.get("label") or p.get("ip") or ""
+        bucket["labels"].append((label, count))  # type: ignore[attr-defined]
 
     clustered: List[Dict[str, object]] = []
     for bucket in buckets.values():
@@ -328,10 +333,10 @@ def cluster_geo_points(points: List[Dict[str, object]], cell_size: float = 2.5) 
             continue
         lat = bucket["lat_sum"] / count  # type: ignore[assignment]
         lon = bucket["lon_sum"] / count  # type: ignore[assignment]
-        ips = sorted(bucket["ips"], key=lambda x: x[1], reverse=True)  # type: ignore[arg-type]
-        label = ips[0][0] if ips else ""
-        if len(ips) > 1:
-            label = f"{label}+{len(ips)-1}"
+        labels = sorted(bucket["labels"], key=lambda x: x[1], reverse=True)  # type: ignore[arg-type]
+        label = labels[0][0] if labels else ""
+        if len(labels) > 1:
+            label = f"{label}+{len(labels)-1}"
         clustered.append({"lat": lat, "lon": lon, "count": count, "label": label})
     return clustered
 
@@ -490,7 +495,15 @@ def main():
             print(f"  {ip:<15} {count:<5} {label}")
             if info.get("lat") is not None and info.get("lon") is not None:
                 geo_points.append(
-                    {"ip": ip, "count": count, "lat": info.get("lat"), "lon": info.get("lon"), "label": label}
+                    {
+                        "ip": ip,
+                        "count": count,
+                        "lat": info.get("lat"),
+                        "lon": info.get("lon"),
+                        "label": label,
+                        "city": info.get("city"),
+                        "country": info.get("country"),
+                    }
                 )
 
     if args.plots_dir:
