@@ -20,7 +20,7 @@ import json
 import os
 import sys
 from pathlib import Path
-from typing import Dict, Iterable, Optional, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Tuple
 from urllib.error import URLError
 from urllib.request import urlopen
 
@@ -121,28 +121,57 @@ def is_private_ip(ip: str) -> bool:
         return False
 
 
-def geo_lookup(ip: str, cache: Dict[str, str]) -> str:
-    if ip in cache:
-        return cache[ip]
+GeoRecord = Dict[str, Optional[object]]
+
+
+def _coerce_geo_record(raw: object) -> GeoRecord:
+    if isinstance(raw, dict):
+        return {
+            "label": raw.get("label") or raw.get("location") or "lookup_failed",
+            "lat": raw.get("lat"),
+            "lon": raw.get("lon"),
+        }
+    if isinstance(raw, str):
+        return {"label": raw, "lat": None, "lon": None}
+    return {"label": "lookup_failed", "lat": None, "lon": None}
+
+
+def geo_lookup(ip: str, cache: Dict[str, object]) -> GeoRecord:
+    cached = cache.get(ip)
+    if cached is not None:
+        record = _coerce_geo_record(cached)
+        if record.get("lat") is not None and record.get("lon") is not None:
+            cache[ip] = record
+            return record
+        if record.get("label") == "private":
+            cache[ip] = record
+            return record
     if is_private_ip(ip):
-        cache[ip] = "private"
-        return cache[ip]
-    url = f"http://ip-api.com/json/{ip}?fields=status,country,regionName,city,org,query"
+        cache[ip] = {"label": "private", "lat": None, "lon": None}
+        return cache[ip]  # type: ignore[return-value]
+    url = (
+        "http://ip-api.com/json/"
+        f"{ip}?fields=status,country,regionName,city,org,lat,lon,query"
+    )
     try:
         with urlopen(url, timeout=4) as resp:
             payload = json.load(resp)
     except (URLError, TimeoutError, ValueError):
-        cache[ip] = "lookup_failed"
-        return cache[ip]
+        cache[ip] = {"label": "lookup_failed", "lat": None, "lon": None}
+        return cache[ip]  # type: ignore[return-value]
     if payload.get("status") != "success":
-        cache[ip] = "lookup_failed"
-        return cache[ip]
+        cache[ip] = {"label": "lookup_failed", "lat": None, "lon": None}
+        return cache[ip]  # type: ignore[return-value]
     parts = [payload.get("country"), payload.get("regionName"), payload.get("city"), payload.get("org")]
-    cache[ip] = " / ".join([p for p in parts if p])
-    return cache[ip]
+    cache[ip] = {
+        "label": " / ".join([p for p in parts if p]),
+        "lat": payload.get("lat"),
+        "lon": payload.get("lon"),
+    }
+    return cache[ip]  # type: ignore[return-value]
 
 
-def load_geo_cache(cache_path: Path) -> Dict[str, str]:
+def load_geo_cache(cache_path: Path) -> Dict[str, object]:
     if cache_path.exists():
         try:
             return json.loads(cache_path.read_text())
@@ -197,12 +226,43 @@ def md_table(
 ) -> str:
     if not counter:
         return "_Sin datos_\n"
+    total = sum(counter.values())
     lines = [
-        f"| {header_label} | Conteo |",
-        "| --- | ---: |",
+        f"| # | {header_label} | Conteo | % |",
+        "| ---: | --- | ---: | ---: |",
     ]
-    for item, count in counter.most_common(limit):
-        lines.append(f"| {fmt_item(item)} | {count} |")
+    for idx, (item, count) in enumerate(counter.most_common(limit), start=1):
+        pct = (count / total) * 100 if total else 0
+        lines.append(f"| {idx} | {fmt_item(item)} | {count} | {pct:.1f}% |")
+    return "\n".join(lines) + "\n"
+
+
+def md_hourly_table(hourly: collections.Counter) -> str:
+    if not hourly:
+        return "_Sin datos_\n"
+    total = sum(hourly.values())
+    lines = [
+        "| Hora (UTC) | Conteo | % |",
+        "| :--- | ---: | ---: |",
+    ]
+    for hour, count in sorted(hourly.items()):
+        pct = (count / total) * 100 if total else 0
+        lines.append(f"| {hour}:00 | {count} | {pct:.1f}% |")
+    return "\n".join(lines) + "\n"
+
+
+def md_geo_table(ips: collections.Counter, cache: Dict[str, object], limit: int) -> str:
+    if not ips:
+        return "_Sin datos_\n"
+    total = sum(ips.values())
+    lines = [
+        "| # | IP origen | Conteo | % | Ubicación |",
+        "| ---: | --- | ---: | ---: | --- |",
+    ]
+    for idx, (ip, count) in enumerate(ips.most_common(limit), start=1):
+        pct = (count / total) * 100 if total else 0
+        info = geo_lookup(ip, cache)
+        lines.append(f"| {idx} | `{ip}` | {count} | {pct:.1f}% | {info.get('label')} |")
     return "\n".join(lines) + "\n"
 
 
@@ -213,6 +273,67 @@ def _get_plt():
     import matplotlib.pyplot as plt
 
     return plt
+
+
+def _get_world_image(cache_path: Path, plt):
+    if cache_path.exists():
+        try:
+            return plt.imread(cache_path)
+        except Exception:
+            pass
+    urls = [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/World_map_-_low_resolution.svg/1024px-World_map_-_low_resolution.svg.png",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/BlankMap-World6-Equirectangular.svg/1024px-BlankMap-World6-Equirectangular.svg.png",
+    ]
+    for url in urls:
+        try:
+            with urlopen(url, timeout=8) as resp:
+                data = resp.read()
+            cache_path.write_bytes(data)
+            return plt.imread(cache_path)
+        except Exception:
+            continue
+    return None
+
+
+def cluster_geo_points(points: List[Dict[str, object]], cell_size: float = 2.5) -> List[Dict[str, object]]:
+    """
+    Agrupa puntos cercanos en una grilla equirectangular simple para evitar
+    superposición de burbujas. `cell_size` se expresa en grados.
+    """
+    if cell_size <= 0:
+        cell_size = 2.5
+    buckets: Dict[Tuple[int, int], Dict[str, object]] = {}
+    for p in points:
+        try:
+            lat = float(p.get("lat"))  # type: ignore[arg-type]
+            lon = float(p.get("lon"))  # type: ignore[arg-type]
+            count = int(p.get("count", 0))  # type: ignore[arg-type]
+        except (TypeError, ValueError):
+            continue
+        key = (round(lat / cell_size), round(lon / cell_size))
+        bucket = buckets.setdefault(
+            key,
+            {"lat_sum": 0.0, "lon_sum": 0.0, "count": 0, "ips": []},
+        )
+        bucket["lat_sum"] = bucket.get("lat_sum", 0.0) + lat * count  # type: ignore[assignment]
+        bucket["lon_sum"] = bucket.get("lon_sum", 0.0) + lon * count  # type: ignore[assignment]
+        bucket["count"] = bucket.get("count", 0) + count  # type: ignore[assignment]
+        bucket["ips"].append((p.get("ip") or p.get("label") or "", count))  # type: ignore[attr-defined]
+
+    clustered: List[Dict[str, object]] = []
+    for bucket in buckets.values():
+        count = bucket["count"]  # type: ignore[assignment]
+        if not count:
+            continue
+        lat = bucket["lat_sum"] / count  # type: ignore[assignment]
+        lon = bucket["lon_sum"] / count  # type: ignore[assignment]
+        ips = sorted(bucket["ips"], key=lambda x: x[1], reverse=True)  # type: ignore[arg-type]
+        label = ips[0][0] if ips else ""
+        if len(ips) > 1:
+            label = f"{label}+{len(ips)-1}"
+        clustered.append({"lat": lat, "lon": lon, "count": count, "label": label})
+    return clustered
 
 
 def plot_bar(counter: collections.Counter, outfile: Path, title: str, xlabel: str, limit: int = 10):
@@ -263,11 +384,80 @@ def plot_hourly(hourly: collections.Counter, outfile: Path):
     return outfile
 
 
+def plot_geo_bubbles(points: List[Dict[str, object]], outfile: Path):
+    clustered = cluster_geo_points(points)
+    if not clustered:
+        return None
+
+    plt = _get_plt()
+    outfile = Path(outfile)
+    outfile.parent.mkdir(parents=True, exist_ok=True)
+
+    lons = [p["lon"] for p in clustered]
+    lats = [p["lat"] for p in clustered]
+    counts = [p["count"] for p in clustered]
+    max_count = max(counts)
+    min_size = 40
+    max_size = 360
+    sizes = [
+        min_size + (max_size - min_size) * (c / max_count) if max_count else min_size
+        for c in counts
+    ]
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+
+    bg = _get_world_image(Path(".ufw_world_map.png"), plt)
+    if bg is not None:
+        ax.imshow(bg, extent=(-180, 180, -90, 90), zorder=0, alpha=0.9)
+    else:
+        ax.set_facecolor("#f2f6fa")
+
+    ax.scatter(
+        lons,
+        lats,
+        s=sizes,
+        alpha=0.65,
+        color="#1f78b4",
+        edgecolor="white",
+        linewidth=0.8,
+        zorder=1,
+    )
+
+    for p in sorted(clustered, key=lambda x: x["count"], reverse=True)[:5]:
+        ax.text(
+            p["lon"],
+            p["lat"],
+            str(p.get("label", "")),
+            fontsize=8,
+            ha="center",
+            va="center",
+            color="#0b3558",
+            weight="bold",
+            zorder=2,
+        )
+
+    ax.set_xlim(-180, 180)
+    ax.set_ylim(-90, 90)
+    ax.set_xticks(range(-180, 181, 60))
+    ax.set_yticks(range(-90, 91, 30))
+    ax.set_xlabel("Longitud")
+    ax.set_ylabel("Latitud")
+    ax.set_title("Bloqueos por ubicación (círculos ~ conteo)")
+    ax.grid(True, linestyle="--", alpha=0.5)
+    fig.tight_layout()
+    fig.savefig(outfile, dpi=150)
+    plt.close(fig)
+    return outfile
+
+
 def main():
     args = parse_args()
     log_path = Path(args.log)
     if not log_path.exists():
         sys.exit(f"Log no encontrado: {log_path}")
+    geo_cache_path = Path(".ufw_geo_cache.json") if args.geo else None
+    geo_cache = load_geo_cache(geo_cache_path) if geo_cache_path else {}
+    geo_points: List[Dict[str, object]] = []
 
     since_dt = None
     if args.since_hours:
@@ -293,23 +483,27 @@ def main():
         print(f"  {hour}:00  {count}")
 
     if args.geo:
-        cache_path = Path(".ufw_geo_cache.json")
-        cache = load_geo_cache(cache_path)
         print(f"\nGeolocalización (máx {args.geo_limit} IPs):")
         for ip, count in ips.most_common(args.geo_limit):
-            location = geo_lookup(ip, cache)
-            print(f"  {ip:<15} {count:<5} {location}")
-        save_geo_cache(cache_path, cache)
+            info = geo_lookup(ip, geo_cache)
+            label = info.get("label", "lookup_failed")
+            print(f"  {ip:<15} {count:<5} {label}")
+            if info.get("lat") is not None and info.get("lon") is not None:
+                geo_points.append(
+                    {"ip": ip, "count": count, "lat": info.get("lat"), "lon": info.get("lon"), "label": label}
+                )
 
     if args.plots_dir:
         plots_dir = Path(args.plots_dir)
         ports_img = plot_bar(ports, plots_dir / "ufw_top_ports.jpg", "Top puertos destino", "Puerto", args.top_ports)
         ips_img = plot_bar(ips, plots_dir / "ufw_top_ips.jpg", "Top IPs origen", "IP", args.top_ips)
         hourly_img = plot_hourly(hourly, plots_dir / "ufw_hourly.jpg")
+        geo_img = plot_geo_bubbles(geo_points, plots_dir / "ufw_geo_map.jpg") if geo_points else None
         for label, img in [
             ("Top puertos destino", ports_img),
             ("Top IPs origen", ips_img),
             ("Bloqueos por hora (UTC)", hourly_img),
+            ("Mapa de bloqueos", geo_img),
         ]:
             if img:
                 plot_paths.append((label, Path(img)))
@@ -329,10 +523,10 @@ def main():
         md_lines.append("")
 
         md_lines.append("## Top puertos destino")
-        md_lines.append(md_table(ports, "Puerto destino", args.top_ports))
+        md_lines.append(md_table(ports, "Puerto destino", args.top_ports, fmt_item=lambda p: f"`{p}`"))
 
         md_lines.append("## Top IPs origen")
-        md_lines.append(md_table(ips, "IP origen", args.top_ips))
+        md_lines.append(md_table(ips, "IP origen", args.top_ips, fmt_item=lambda ip: f"`{ip}`"))
 
         md_lines.append("## Top IP origen -> puerto destino")
         md_lines.append(
@@ -340,34 +534,16 @@ def main():
                 pairs,
                 "IP origen -> puerto",
                 args.top_ips,
-                fmt_item=lambda x: f"{x[0]} -> {x[1]}",
+                fmt_item=lambda x: f"`{x[0]}` -> `{x[1]}`",
             )
         )
 
         md_lines.append("## Bloqueos por hora (UTC)")
-        if hourly:
-            md_lines.append("| Hora | Conteo |")
-            md_lines.append("| --- | ---: |")
-            for hour, count in sorted(hourly.items()):
-                md_lines.append(f"| {hour}:00 | {count} |")
-            md_lines.append("")
-        else:
-            md_lines.append("_Sin datos_\n")
+        md_lines.append(md_hourly_table(hourly))
 
         if args.geo:
-            cache_path = Path(".ufw_geo_cache.json")
-            cache = load_geo_cache(cache_path)
             md_lines.append(f"## Geolocalización (máx {args.geo_limit} IPs)")
-            if ips:
-                md_lines.append("| IP origen | Conteo | Ubicación |")
-                md_lines.append("| --- | ---: | --- |")
-                for ip, count in ips.most_common(args.geo_limit):
-                    location = geo_lookup(ip, cache)
-                    md_lines.append(f"| {ip} | {count} | {location} |")
-                md_lines.append("")
-            else:
-                md_lines.append("_Sin datos_\n")
-            save_geo_cache(cache_path, cache)
+            md_lines.append(md_geo_table(ips, geo_cache, args.geo_limit))
 
         if plot_paths:
             md_lines.append("## Gráficos")
@@ -379,6 +555,9 @@ def main():
 
         Path(args.md_out).write_text("\n".join(md_lines))
         print(f"\nReporte Markdown generado en: {args.md_out}")
+
+    if geo_cache_path:
+        save_geo_cache(geo_cache_path, geo_cache)
 
 
 if __name__ == "__main__":
