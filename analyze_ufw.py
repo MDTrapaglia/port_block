@@ -7,6 +7,7 @@ Reads /var/log/ufw.log (or another file) and summarizes:
 - top destination ports
 - top source IPs (optionally with geolocation via ip-api.com)
 - top (source IP, destination port) pairs
+- simple heuristic hints for VPN/proxy/hosting when geolocation is enabled
 - hourly histogram
 """
 
@@ -22,7 +23,7 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 from urllib.error import URLError
-from urllib.request import urlopen
+from urllib.request import Request, urlopen
 
 
 def parse_args() -> argparse.Namespace:
@@ -53,7 +54,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--geo",
         action="store_true",
-        help="Añadir geolocalización para los IPs del top (usa ip-api.com)",
+        help="Añadir geolocalización y pista de hosting/VPN/proxy (usa ip-api.com, heurístico)",
     )
     parser.add_argument(
         "--geo-limit",
@@ -122,6 +123,84 @@ def is_private_ip(ip: str) -> bool:
 
 
 GeoRecord = Dict[str, Optional[object]]
+WORLD_MAP_CACHE = Path(__file__).resolve().parent / ".ufw_world_map.png"
+WORLD_GEOJSON_CACHE = Path(__file__).resolve().parent / ".ufw_world_geo.json"
+
+VPN_KEYWORDS = (
+    "vpn",
+    "m247",
+    "torguard",
+    "nordvpn",
+    "expressvpn",
+    "surfshark",
+    "mullvad",
+    "proton",
+    "pia",
+    "private internet access",
+    "windscribe",
+    "tunnelbear",
+    "seedbox",
+    "tor-exit",
+    "tor exit",
+)
+HOSTING_KEYWORDS = (
+    "aws",
+    "amazon",
+    "ec2",
+    "gce",
+    "gcp",
+    "google cloud",
+    "google llc",
+    "azure",
+    "microsoft",
+    "digitalocean",
+    "linode",
+    "ovh",
+    "hetzner",
+    "vultr",
+    "contabo",
+    "leaseweb",
+    "scaleway",
+    "upcloud",
+    "colo",
+    "colocation",
+    "datacenter",
+    "data center",
+    "servers",
+    "choopa",
+    "sharktech",
+    "alibaba",
+    "tencent",
+    "hostinger",
+    "hostwinds",
+    "psychz",
+    "hivelocity",
+    "clouvider",
+    "kimsufi",
+    "soyoustart",
+)
+CDN_KEYWORDS = (
+    "akamai",
+    "fastly",
+    "cloudflare",
+    "imperva",
+    "incapsula",
+)
+MOBILE_KEYWORDS = (
+    "mobile",
+    "cellular",
+    "wireless",
+    "lte",
+    "5g",
+    "4g",
+    "telefonica",
+    "movistar",
+    "claro",
+    "vodafone",
+    "tim brasil",
+    "tim s.p.a",
+    "telecom italia",
+)
 
 
 def _coerce_geo_record(raw: object) -> GeoRecord:
@@ -132,10 +211,73 @@ def _coerce_geo_record(raw: object) -> GeoRecord:
             "lon": raw.get("lon"),
             "country": raw.get("country"),
             "city": raw.get("city"),
+            "org": raw.get("org"),
+            "isp": raw.get("isp"),
+            "asn": raw.get("asn") or raw.get("as"),
         }
     if isinstance(raw, str):
         return {"label": raw, "lat": None, "lon": None, "country": None, "city": None}
     return {"label": "lookup_failed", "lat": None, "lon": None, "country": None, "city": None}
+
+
+def _keyword_hit(text: str, keywords: Iterable[str]) -> Optional[str]:
+    for kw in keywords:
+        if kw in text:
+            return kw
+    return None
+
+
+def assess_network_origin(info: GeoRecord) -> Dict[str, object]:
+    """
+    Clasificación heurística de la red origen para inferir hosting/VPN/proxy.
+    Usa coincidencias simples en org/ISP/ASN/label; no es determinista.
+    """
+    label = str(info.get("label") or "")
+    org = str(info.get("org") or "")
+    isp = str(info.get("isp") or "")
+    asn = str(info.get("asn") or "")
+    text = " ".join([label, org, isp, asn]).lower()
+
+    if info.get("label") == "private":
+        return {"category": "Privada/CGNAT", "evidence": [], "suspicious": False}
+    if not text.strip():
+        return {"category": "Sin datos", "evidence": [], "suspicious": False}
+
+    evidence: List[str] = []
+    category = "Sin señal aparente"
+
+    hit = _keyword_hit(text, VPN_KEYWORDS)
+    if hit:
+        evidence.append(hit)
+        category = "VPN/Proxy sospechado"
+    else:
+        hit = _keyword_hit(text, HOSTING_KEYWORDS)
+        if hit:
+            evidence.append(hit)
+            category = "Hosting/Cloud"
+        else:
+            hit = _keyword_hit(text, CDN_KEYWORDS)
+            if hit:
+                evidence.append(hit)
+                category = "CDN/Edge"
+
+    if not evidence:
+        hit = _keyword_hit(text, MOBILE_KEYWORDS)
+        if hit:
+            evidence.append(hit)
+            category = "Móvil/CGNAT"
+
+    suspicious = category in {"VPN/Proxy sospechado", "Hosting/Cloud", "CDN/Edge"}
+    return {"category": category, "evidence": evidence, "suspicious": suspicious}
+
+
+def format_network_hint(info: GeoRecord, assessment: Optional[Dict[str, object]] = None) -> str:
+    assessment = assessment or assess_network_origin(info)
+    evidence = assessment.get("evidence") or []
+    category = assessment.get("category") or "Sin datos"
+    if evidence:
+        return f"{category} ({', '.join(evidence)})"
+    return str(category)
 
 
 def geo_lookup(ip: str, cache: Dict[str, object]) -> GeoRecord:
@@ -153,7 +295,7 @@ def geo_lookup(ip: str, cache: Dict[str, object]) -> GeoRecord:
         return cache[ip]  # type: ignore[return-value]
     url = (
         "http://ip-api.com/json/"
-        f"{ip}?fields=status,country,regionName,city,org,lat,lon,query"
+        f"{ip}?fields=status,country,regionName,city,org,isp,as,lat,lon,query"
     )
     try:
         with urlopen(url, timeout=4) as resp:
@@ -164,13 +306,21 @@ def geo_lookup(ip: str, cache: Dict[str, object]) -> GeoRecord:
     if payload.get("status") != "success":
         cache[ip] = {"label": "lookup_failed", "lat": None, "lon": None}
         return cache[ip]  # type: ignore[return-value]
-    parts = [payload.get("country"), payload.get("regionName"), payload.get("city"), payload.get("org")]
+    parts = [
+        payload.get("country"),
+        payload.get("regionName"),
+        payload.get("city"),
+        payload.get("org") or payload.get("isp"),
+    ]
     cache[ip] = {
         "label": " / ".join([p for p in parts if p]),
         "lat": payload.get("lat"),
         "lon": payload.get("lon"),
         "country": payload.get("country"),
         "city": payload.get("city"),
+        "org": payload.get("org"),
+        "isp": payload.get("isp"),
+        "asn": payload.get("as"),
     }
     return cache[ip]  # type: ignore[return-value]
 
@@ -255,18 +405,61 @@ def md_hourly_table(hourly: collections.Counter) -> str:
     return "\n".join(lines) + "\n"
 
 
-def md_geo_table(ips: collections.Counter, cache: Dict[str, object], limit: int) -> str:
-    if not ips:
-        return "_Sin datos_\n"
-    total = sum(ips.values())
-    lines = [
-        "| # | IP origen | Conteo | % | Ubicación |",
-        "| ---: | --- | ---: | ---: | --- |",
-    ]
-    for idx, (ip, count) in enumerate(ips.most_common(limit), start=1):
-        pct = (count / total) * 100 if total else 0
+def build_geo_rows(
+    ips: collections.Counter,
+    cache: Dict[str, object],
+    limit: int,
+) -> List[Dict[str, object]]:
+    rows: List[Dict[str, object]] = []
+    for ip, count in ips.most_common(limit):
         info = geo_lookup(ip, cache)
-        lines.append(f"| {idx} | `{ip}` | {count} | {pct:.1f}% | {info.get('label')} |")
+        assessment = assess_network_origin(info)
+        rows.append(
+            {
+                "ip": ip,
+                "count": count,
+                "info": info,
+                "assessment": assessment,
+                "network_hint": format_network_hint(info, assessment),
+            }
+        )
+    return rows
+
+
+def md_geo_table(rows: List[Dict[str, object]]) -> str:
+    if not rows:
+        return "_Sin datos_\n"
+    total = sum(int(r.get("count", 0)) for r in rows)
+    lines = [
+        "| # | IP origen | Conteo | % | Ubicación | Red / sospecha |",
+        "| ---: | --- | ---: | ---: | --- | --- |",
+    ]
+    for idx, row in enumerate(rows, start=1):
+        count = int(row.get("count", 0))
+        pct = (count / total) * 100 if total else 0
+        info = _coerce_geo_record(row.get("info"))
+        label = info.get("label")
+        hint = row.get("network_hint") or format_network_hint(info, row.get("assessment"))  # type: ignore[arg-type]
+        lines.append(f"| {idx} | `{row.get('ip')}` | {count} | {pct:.1f}% | {label} | {hint} |")
+    return "\n".join(lines) + "\n"
+
+
+def md_suspicious_table(rows: List[Dict[str, object]]) -> str:
+    suspicious = [r for r in rows if r.get("assessment", {}).get("suspicious")]
+    if not suspicious:
+        return "_Sin señales claras de VPN/proxy/hosting en el top_\n"
+    total = sum(int(r.get("count", 0)) for r in suspicious)
+    lines = [
+        "| # | IP origen | Conteo | % | Sospecha | Ubicación |",
+        "| ---: | --- | ---: | ---: | --- | --- |",
+    ]
+    for idx, row in enumerate(suspicious, start=1):
+        count = int(row.get("count", 0))
+        pct = (count / total) * 100 if total else 0
+        info = _coerce_geo_record(row.get("info"))
+        label = info.get("label")
+        hint = row.get("network_hint") or format_network_hint(info, row.get("assessment"))  # type: ignore[arg-type]
+        lines.append(f"| {idx} | `{row.get('ip')}` | {count} | {pct:.1f}% | {hint} | {label} |")
     return "\n".join(lines) + "\n"
 
 
@@ -291,13 +484,87 @@ def _get_world_image(cache_path: Path, plt):
     ]
     for url in urls:
         try:
-            with urlopen(url, timeout=8) as resp:
+            req = Request(url, headers={"User-Agent": "Mozilla/5.0 ufw-geo-map"})
+            with urlopen(req, timeout=8) as resp:
                 data = resp.read()
             cache_path.write_bytes(data)
             return plt.imread(cache_path)
         except Exception:
             continue
     return None
+
+
+def _load_world_geojson(cache_path: Path):
+    if cache_path.exists():
+        try:
+            return json.loads(cache_path.read_text())
+        except Exception:
+            pass
+    urls = [
+        "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json",
+        "https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson",
+    ]
+    for url in urls:
+        try:
+            req = Request(url, headers={"User-Agent": "Mozilla/5.0 ufw-geo-map"})
+            with urlopen(req, timeout=12) as resp:
+                data = json.load(resp)
+            cache_path.write_text(json.dumps(data))
+            return data
+        except Exception:
+            continue
+    return None
+
+
+def _draw_world_map(ax, plt):
+    """
+    Dibuja un mapa base en proyección equirectangular usando polígonos GeoJSON.
+    Evita offsets de proyección de algunas imágenes descargadas.
+    """
+    data = _load_world_geojson(WORLD_GEOJSON_CACHE)
+    if not data:
+        ax.set_facecolor("#f2f6fa")
+        return False
+    try:
+        from matplotlib.collections import PatchCollection
+        from matplotlib.patches import Polygon
+    except Exception:
+        ax.set_facecolor("#f2f6fa")
+        return False
+
+    patches = []
+    for feature in data.get("features", []):
+        geom = feature.get("geometry") or {}
+        gtype = geom.get("type")
+        coords = geom.get("coordinates") or []
+        if gtype == "Polygon":
+            rings = coords
+        elif gtype == "MultiPolygon":
+            rings = [poly[0] for poly in coords if poly]
+        else:
+            continue
+        for ring in rings:
+            try:
+                xy = [(float(lon), float(lat)) for lon, lat in ring]
+            except Exception:
+                continue
+            patches.append(Polygon(xy, closed=True))
+
+    if not patches:
+        ax.set_facecolor("#f2f6fa")
+        return False
+
+    pc = PatchCollection(
+        patches,
+        facecolor="#0d0d0d",
+        edgecolor="#2f2f2f",
+        linewidth=0.35,
+        alpha=0.9,
+        zorder=0,
+    )
+    ax.add_collection(pc)
+    ax.set_facecolor("#f7f9fb")
+    return True
 
 
 def cluster_geo_points(points: List[Dict[str, object]], cell_size: float = 2.5) -> List[Dict[str, object]]:
@@ -411,11 +678,13 @@ def plot_geo_bubbles(points: List[Dict[str, object]], outfile: Path):
 
     fig, ax = plt.subplots(figsize=(12, 6))
 
-    bg = _get_world_image(Path(".ufw_world_map.png"), plt)
-    if bg is not None:
-        ax.imshow(bg, extent=(-180, 180, -90, 90), zorder=0, alpha=0.9)
-    else:
-        ax.set_facecolor("#f2f6fa")
+    map_drawn = _draw_world_map(ax, plt)
+    if not map_drawn:
+        bg = _get_world_image(WORLD_MAP_CACHE, plt)
+        if bg is not None:
+            ax.imshow(bg, extent=(-180, 180, -90, 90), zorder=0, alpha=0.9)
+        else:
+            ax.set_facecolor("#f2f6fa")
 
     ax.scatter(
         lons,
@@ -462,6 +731,8 @@ def main():
         sys.exit(f"Log no encontrado: {log_path}")
     geo_cache_path = Path(".ufw_geo_cache.json") if args.geo else None
     geo_cache = load_geo_cache(geo_cache_path) if geo_cache_path else {}
+    geo_rows: List[Dict[str, object]] = []
+    suspicious_rows: List[Dict[str, object]] = []
     geo_points: List[Dict[str, object]] = []
 
     since_dt = None
@@ -489,15 +760,18 @@ def main():
 
     if args.geo:
         print(f"\nGeolocalización (máx {args.geo_limit} IPs):")
-        for ip, count in ips.most_common(args.geo_limit):
-            info = geo_lookup(ip, geo_cache)
+        geo_rows = build_geo_rows(ips, geo_cache, args.geo_limit)
+        suspicious_rows = [r for r in geo_rows if r.get("assessment", {}).get("suspicious")]
+        for row in geo_rows:
+            info = _coerce_geo_record(row.get("info"))
             label = info.get("label", "lookup_failed")
-            print(f"  {ip:<15} {count:<5} {label}")
+            hint = row.get("network_hint", "Sin datos")
+            print(f"  {row.get('ip'):<15} {row.get('count'):<5} {label} [{hint}]")
             if info.get("lat") is not None and info.get("lon") is not None:
                 geo_points.append(
                     {
-                        "ip": ip,
-                        "count": count,
+                        "ip": row.get("ip"),
+                        "count": row.get("count"),
                         "lat": info.get("lat"),
                         "lon": info.get("lon"),
                         "label": label,
@@ -505,6 +779,10 @@ def main():
                         "country": info.get("country"),
                     }
                 )
+        if suspicious_rows:
+            print("\nSospecha de VPN/Proxy/Hosting (heurística):")
+            for row in suspicious_rows:
+                print(f"  {row.get('ip'):<15} {row.get('count'):<5} {row.get('network_hint')}")
 
     if args.plots_dir:
         plots_dir = Path(args.plots_dir)
@@ -556,7 +834,10 @@ def main():
 
         if args.geo:
             md_lines.append(f"## Geolocalización (máx {args.geo_limit} IPs)")
-            md_lines.append(md_geo_table(ips, geo_cache, args.geo_limit))
+            md_lines.append(md_geo_table(geo_rows))
+            if suspicious_rows:
+                md_lines.append("## Sospecha de VPN/Proxy/Hosting (heurística)")
+                md_lines.append(md_suspicious_table(suspicious_rows))
 
         if plot_paths:
             md_lines.append("## Gráficos")
