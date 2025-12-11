@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Resumen rápido de bloqueos de UFW sin argumentos.
-# Usa analyze_ufw.py con presets razonables; se pueden añadir flags extra.
+# Quick UFW block summary with no arguments.
+# Uses analyze_ufw.py with reasonable presets; extra flags can be added.
 set -euo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 OUT_FILE="${UFW_MD_OUT:-$PWD/ufw_report.md}"

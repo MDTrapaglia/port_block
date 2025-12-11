@@ -31,44 +31,44 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--log",
         default="/var/log/ufw.log",
-        help="Ruta del log de UFW (default: /var/log/ufw.log)",
+        help="Path to the UFW log (default: /var/log/ufw.log)",
     )
     parser.add_argument(
         "--top-ports",
         type=int,
         default=10,
-        help="Cantidad de puertos destino a mostrar (default: 10)",
+        help="Number of destination ports to show (default: 10)",
     )
     parser.add_argument(
         "--top-ips",
         type=int,
         default=10,
-        help="Cantidad de IP origen a mostrar (default: 10)",
+        help="Number of source IPs to show (default: 10)",
     )
     parser.add_argument(
         "--since-hours",
         type=float,
         default=None,
-        help="Solo procesar eventos de las últimas N horas (default: todo el log)",
+        help="Only process events from the last N hours (default: entire log)",
     )
     parser.add_argument(
         "--geo",
         action="store_true",
-        help="Añadir geolocalización y pista de hosting/VPN/proxy (usa ip-api.com, heurístico)",
+        help="Add geolocation and hosting/VPN/proxy hint (uses ip-api.com, heuristic)",
     )
     parser.add_argument(
         "--geo-limit",
         type=int,
         default=15,
-        help="Máximo de IPs a geolocalizar (default: 15)",
+        help="Maximum number of IPs to geolocate (default: 15)",
     )
     parser.add_argument(
         "--md-out",
-        help="Ruta de archivo Markdown para guardar el reporte (default: no genera archivo)",
+        help="Path to a Markdown report file (default: no file)",
     )
     parser.add_argument(
         "--plots-dir",
-        help="Directorio donde guardar gráficos (jpg). Si no se pasa, no se generan gráficos.",
+        help="Directory to save chart images (jpg). If omitted, plots are not generated.",
     )
     return parser.parse_args()
 
@@ -229,8 +229,8 @@ def _keyword_hit(text: str, keywords: Iterable[str]) -> Optional[str]:
 
 def assess_network_origin(info: GeoRecord) -> Dict[str, object]:
     """
-    Clasificación heurística de la red origen para inferir hosting/VPN/proxy.
-    Usa coincidencias simples en org/ISP/ASN/label; no es determinista.
+    Heuristic classification of the source network to infer hosting/VPN/proxy.
+    Uses simple keyword matches in org/ISP/ASN/label; not deterministic.
     """
     label = str(info.get("label") or "")
     org = str(info.get("org") or "")
@@ -239,17 +239,17 @@ def assess_network_origin(info: GeoRecord) -> Dict[str, object]:
     text = " ".join([label, org, isp, asn]).lower()
 
     if info.get("label") == "private":
-        return {"category": "Privada/CGNAT", "evidence": [], "suspicious": False}
+        return {"category": "Private/CGNAT", "evidence": [], "suspicious": False}
     if not text.strip():
-        return {"category": "Sin datos", "evidence": [], "suspicious": False}
+        return {"category": "No data", "evidence": [], "suspicious": False}
 
     evidence: List[str] = []
-    category = "Sin señal aparente"
+    category = "No apparent signal"
 
     hit = _keyword_hit(text, VPN_KEYWORDS)
     if hit:
         evidence.append(hit)
-        category = "VPN/Proxy sospechado"
+        category = "VPN/Proxy suspected"
     else:
         hit = _keyword_hit(text, HOSTING_KEYWORDS)
         if hit:
@@ -265,16 +265,16 @@ def assess_network_origin(info: GeoRecord) -> Dict[str, object]:
         hit = _keyword_hit(text, MOBILE_KEYWORDS)
         if hit:
             evidence.append(hit)
-            category = "Móvil/CGNAT"
+            category = "Mobile/CGNAT"
 
-    suspicious = category in {"VPN/Proxy sospechado", "Hosting/Cloud", "CDN/Edge"}
+    suspicious = category in {"VPN/Proxy suspected", "Hosting/Cloud", "CDN/Edge"}
     return {"category": category, "evidence": evidence, "suspicious": suspicious}
 
 
 def format_network_hint(info: GeoRecord, assessment: Optional[Dict[str, object]] = None) -> str:
     assessment = assessment or assess_network_origin(info)
     evidence = assessment.get("evidence") or []
-    category = assessment.get("category") or "Sin datos"
+    category = assessment.get("category") or "No data"
     if evidence:
         return f"{category} ({', '.join(evidence)})"
     return str(category)
@@ -379,10 +379,10 @@ def md_table(
     fmt_item=str,
 ) -> str:
     if not counter:
-        return "_Sin datos_\n"
+        return "_No data_\n"
     total = sum(counter.values())
     lines = [
-        f"| # | {header_label} | Conteo | % |",
+        f"| # | {header_label} | Count | % |",
         "| ---: | --- | ---: | ---: |",
     ]
     for idx, (item, count) in enumerate(counter.most_common(limit), start=1):
@@ -393,10 +393,10 @@ def md_table(
 
 def md_hourly_table(hourly: collections.Counter) -> str:
     if not hourly:
-        return "_Sin datos_\n"
+        return "_No data_\n"
     total = sum(hourly.values())
     lines = [
-        "| Hora (UTC) | Conteo | % |",
+        "| Hour (UTC) | Count | % |",
         "| :--- | ---: | ---: |",
     ]
     for hour, count in sorted(hourly.items()):
@@ -428,10 +428,10 @@ def build_geo_rows(
 
 def md_geo_table(rows: List[Dict[str, object]]) -> str:
     if not rows:
-        return "_Sin datos_\n"
+        return "_No data_\n"
     total = sum(int(r.get("count", 0)) for r in rows)
     lines = [
-        "| # | IP origen | Conteo | % | Ubicación | Red / sospecha |",
+        "| # | Source IP | Count | % | Location | Network / hint |",
         "| ---: | --- | ---: | ---: | --- | --- |",
     ]
     for idx, row in enumerate(rows, start=1):
@@ -447,10 +447,10 @@ def md_geo_table(rows: List[Dict[str, object]]) -> str:
 def md_suspicious_table(rows: List[Dict[str, object]]) -> str:
     suspicious = [r for r in rows if r.get("assessment", {}).get("suspicious")]
     if not suspicious:
-        return "_Sin señales claras de VPN/proxy/hosting en el top_\n"
+        return "_No clear VPN/proxy/hosting signals in the top IPs_\n"
     total = sum(int(r.get("count", 0)) for r in suspicious)
     lines = [
-        "| # | IP origen | Conteo | % | Sospecha | Ubicación |",
+        "| # | Source IP | Count | % | Suspicion | Location |",
         "| ---: | --- | ---: | ---: | --- | --- |",
     ]
     for idx, row in enumerate(suspicious, start=1):
@@ -518,18 +518,19 @@ def _load_world_geojson(cache_path: Path):
 
 def _draw_world_map(ax, plt):
     """
-    Dibuja un mapa base en proyección equirectangular usando polígonos GeoJSON.
-    Evita offsets de proyección de algunas imágenes descargadas.
+    Draw a base map in equirectangular projection using GeoJSON polygons.
+    Avoids projection offsets that happen with some downloaded images.
     """
+    bg_color = "#0b1724"
     data = _load_world_geojson(WORLD_GEOJSON_CACHE)
     if not data:
-        ax.set_facecolor("#f2f6fa")
+        ax.set_facecolor(bg_color)
         return False
     try:
         from matplotlib.collections import PatchCollection
         from matplotlib.patches import Polygon
     except Exception:
-        ax.set_facecolor("#f2f6fa")
+        ax.set_facecolor(bg_color)
         return False
 
     patches = []
@@ -551,26 +552,26 @@ def _draw_world_map(ax, plt):
             patches.append(Polygon(xy, closed=True))
 
     if not patches:
-        ax.set_facecolor("#f2f6fa")
+        ax.set_facecolor(bg_color)
         return False
 
     pc = PatchCollection(
         patches,
-        facecolor="#0d0d0d",
-        edgecolor="#2f2f2f",
-        linewidth=0.35,
-        alpha=0.9,
+        facecolor="#1c2f45",
+        edgecolor="#365674",
+        linewidth=0.4,
+        alpha=0.95,
         zorder=0,
     )
     ax.add_collection(pc)
-    ax.set_facecolor("#f7f9fb")
+    ax.set_facecolor(bg_color)
     return True
 
 
 def cluster_geo_points(points: List[Dict[str, object]], cell_size: float = 2.5) -> List[Dict[str, object]]:
     """
-    Agrupa puntos cercanos en una grilla equirectangular simple para evitar
-    superposición de burbujas. `cell_size` se expresa en grados.
+    Group nearby points on a simple equirectangular grid to avoid bubble overlap.
+    `cell_size` is expressed in degrees.
     """
     if cell_size <= 0:
         cell_size = 2.5
@@ -622,7 +623,7 @@ def plot_bar(counter: collections.Counter, outfile: Path, title: str, xlabel: st
     ax.bar(range(len(labels)), counts, color="#1f77b4")
     ax.set_title(title)
     ax.set_xlabel(xlabel)
-    ax.set_ylabel("Conteo")
+    ax.set_ylabel("Count")
     ax.set_xticks(range(len(labels)))
     ax.set_xticklabels(labels, rotation=45, ha="right")
     ax.grid(True, axis="y", linestyle="--", alpha=0.4)
@@ -644,9 +645,9 @@ def plot_hourly(hourly: collections.Counter, outfile: Path):
 
     fig, ax = plt.subplots(figsize=(10, 4))
     ax.plot(range(len(labels)), counts, marker="o", color="#d62728")
-    ax.set_title("Bloqueos por hora (UTC)")
-    ax.set_xlabel("Hora")
-    ax.set_ylabel("Conteo")
+    ax.set_title("Blocks per hour (UTC)")
+    ax.set_xlabel("Hour")
+    ax.set_ylabel("Count")
     ax.set_xticks(range(len(labels)))
     ax.set_xticklabels(labels, rotation=45, ha="right")
     ax.grid(True, linestyle="--", alpha=0.4)
@@ -676,24 +677,30 @@ def plot_geo_bubbles(points: List[Dict[str, object]], outfile: Path):
         for c in counts
     ]
 
+    cmap = plt.cm.magma
+    colors = [cmap(0.25 + 0.65 * (c / max_count if max_count else 0)) for c in counts]
+
+    bg_color = "#0b1724"
+
     fig, ax = plt.subplots(figsize=(12, 6))
+    fig.patch.set_facecolor(bg_color)
 
     map_drawn = _draw_world_map(ax, plt)
     if not map_drawn:
         bg = _get_world_image(WORLD_MAP_CACHE, plt)
         if bg is not None:
-            ax.imshow(bg, extent=(-180, 180, -90, 90), zorder=0, alpha=0.9)
+            ax.imshow(bg, extent=(-180, 180, -90, 90), zorder=0, alpha=0.55)
         else:
-            ax.set_facecolor("#f2f6fa")
+            ax.set_facecolor(bg_color)
 
     ax.scatter(
         lons,
         lats,
         s=sizes,
-        alpha=0.65,
-        color="#1f78b4",
-        edgecolor="white",
-        linewidth=0.8,
+        alpha=0.78,
+        c=colors,
+        edgecolor="#0b1724",
+        linewidth=0.6,
         zorder=1,
     )
 
@@ -705,7 +712,7 @@ def plot_geo_bubbles(points: List[Dict[str, object]], outfile: Path):
             fontsize=8,
             ha="center",
             va="center",
-            color="#0b3558",
+            color="#e9f1ff",
             weight="bold",
             zorder=2,
         )
@@ -714,10 +721,13 @@ def plot_geo_bubbles(points: List[Dict[str, object]], outfile: Path):
     ax.set_ylim(-90, 90)
     ax.set_xticks(range(-180, 181, 60))
     ax.set_yticks(range(-90, 91, 30))
-    ax.set_xlabel("Longitud")
-    ax.set_ylabel("Latitud")
-    ax.set_title("Bloqueos por ubicación (círculos ~ conteo)")
-    ax.grid(True, linestyle="--", alpha=0.5)
+    ax.set_xlabel("Longitude", color="#dfe9f5")
+    ax.set_ylabel("Latitude", color="#dfe9f5")
+    ax.set_title("Blocks by location (circle size ~ count)", color="#f5f9ff")
+    ax.tick_params(colors="#c7d4e6")
+    for spine in ax.spines.values():
+        spine.set_edgecolor("#3a536b")
+    ax.grid(True, linestyle="--", alpha=0.45, color="#2b475d")
     fig.tight_layout()
     fig.savefig(outfile, dpi=150)
     plt.close(fig)
@@ -728,7 +738,7 @@ def main():
     args = parse_args()
     log_path = Path(args.log)
     if not log_path.exists():
-        sys.exit(f"Log no encontrado: {log_path}")
+        sys.exit(f"Log not found: {log_path}")
     geo_cache_path = Path(".ufw_geo_cache.json") if args.geo else None
     geo_cache = load_geo_cache(geo_cache_path) if geo_cache_path else {}
     geo_rows: List[Dict[str, object]] = []
@@ -743,29 +753,29 @@ def main():
     total, ports, ips, pairs, hourly = summarize(blocks)
     plot_paths = []
 
-    print(f"Archivo: {log_path}")
+    print(f"Log file: {log_path}")
     if args.since_hours:
-        print(f"Ventana: últimas {args.since_hours} horas")
-    print(f"Total de bloqueos: {total}")
-    print(f"IPs de origen únicas: {len(ips)}")
-    print(f"Puertos destino únicos: {len(ports)}")
+        print(f"Window: last {args.since_hours} hours")
+    print(f"Total blocks: {total}")
+    print(f"Unique source IPs: {len(ips)}")
+    print(f"Unique destination ports: {len(ports)}")
 
-    print_counter(ports, "Top puertos destino", args.top_ports)
-    print_counter(ips, "Top IPs origen", args.top_ips)
-    print_counter(pairs, "Top (IP origen, puerto destino)", args.top_ips, fmt=lambda x: f"{x[0]} -> {x[1]}")
+    print_counter(ports, "Top destination ports", args.top_ports)
+    print_counter(ips, "Top source IPs", args.top_ips)
+    print_counter(pairs, "Top (source IP, destination port)", args.top_ips, fmt=lambda x: f"{x[0]} -> {x[1]}")
 
-    print("\nBloqueos por hora (UTC):")
+    print("\nBlocks per hour (UTC):")
     for hour, count in sorted(hourly.items()):
         print(f"  {hour}:00  {count}")
 
     if args.geo:
-        print(f"\nGeolocalización (máx {args.geo_limit} IPs):")
+        print(f"\nGeolocation (max {args.geo_limit} IPs):")
         geo_rows = build_geo_rows(ips, geo_cache, args.geo_limit)
         suspicious_rows = [r for r in geo_rows if r.get("assessment", {}).get("suspicious")]
         for row in geo_rows:
             info = _coerce_geo_record(row.get("info"))
             label = info.get("label", "lookup_failed")
-            hint = row.get("network_hint", "Sin datos")
+            hint = row.get("network_hint", "No data")
             print(f"  {row.get('ip'):<15} {row.get('count'):<5} {label} [{hint}]")
             if info.get("lat") is not None and info.get("lon") is not None:
                 geo_points.append(
@@ -780,26 +790,26 @@ def main():
                     }
                 )
         if suspicious_rows:
-            print("\nSospecha de VPN/Proxy/Hosting (heurística):")
+            print("\nVPN/Proxy/Hosting suspicion (heuristic):")
             for row in suspicious_rows:
                 print(f"  {row.get('ip'):<15} {row.get('count'):<5} {row.get('network_hint')}")
 
     if args.plots_dir:
         plots_dir = Path(args.plots_dir)
-        ports_img = plot_bar(ports, plots_dir / "ufw_top_ports.jpg", "Top puertos destino", "Puerto", args.top_ports)
-        ips_img = plot_bar(ips, plots_dir / "ufw_top_ips.jpg", "Top IPs origen", "IP", args.top_ips)
+        ports_img = plot_bar(ports, plots_dir / "ufw_top_ports.jpg", "Top destination ports", "Port", args.top_ports)
+        ips_img = plot_bar(ips, plots_dir / "ufw_top_ips.jpg", "Top source IPs", "IP", args.top_ips)
         hourly_img = plot_hourly(hourly, plots_dir / "ufw_hourly.jpg")
         geo_img = plot_geo_bubbles(geo_points, plots_dir / "ufw_geo_map.jpg") if geo_points else None
         for label, img in [
-            ("Top puertos destino", ports_img),
-            ("Top IPs origen", ips_img),
-            ("Bloqueos por hora (UTC)", hourly_img),
-            ("Mapa de bloqueos", geo_img),
+            ("Top destination ports", ports_img),
+            ("Top source IPs", ips_img),
+            ("Blocks per hour (UTC)", hourly_img),
+            ("Block map", geo_img),
         ]:
             if img:
                 plot_paths.append((label, Path(img)))
         if plot_paths:
-            print("\nGráficos guardados:")
+            print("\nSaved charts:")
             for label, img in plot_paths:
                 print(f"  {label}: {img}")
 
@@ -807,40 +817,40 @@ def main():
         md_lines = ["# UFW Block Report", ""]
         md_lines.append(f"- Log: `{log_path}`")
         if args.since_hours:
-            md_lines.append(f"- Ventana: últimas {args.since_hours} horas")
-        md_lines.append(f"- Total de bloqueos: {total}")
-        md_lines.append(f"- IPs de origen únicas: {len(ips)}")
-        md_lines.append(f"- Puertos destino únicos: {len(ports)}")
+            md_lines.append(f"- Window: last {args.since_hours} hours")
+        md_lines.append(f"- Total blocks: {total}")
+        md_lines.append(f"- Unique source IPs: {len(ips)}")
+        md_lines.append(f"- Unique destination ports: {len(ports)}")
         md_lines.append("")
 
-        md_lines.append("## Top puertos destino")
-        md_lines.append(md_table(ports, "Puerto destino", args.top_ports, fmt_item=lambda p: f"`{p}`"))
+        md_lines.append("## Top destination ports")
+        md_lines.append(md_table(ports, "Destination port", args.top_ports, fmt_item=lambda p: f"`{p}`"))
 
-        md_lines.append("## Top IPs origen")
-        md_lines.append(md_table(ips, "IP origen", args.top_ips, fmt_item=lambda ip: f"`{ip}`"))
+        md_lines.append("## Top source IPs")
+        md_lines.append(md_table(ips, "Source IP", args.top_ips, fmt_item=lambda ip: f"`{ip}`"))
 
-        md_lines.append("## Top IP origen -> puerto destino")
+        md_lines.append("## Top source IP -> destination port")
         md_lines.append(
             md_table(
                 pairs,
-                "IP origen -> puerto",
+                "Source IP -> port",
                 args.top_ips,
                 fmt_item=lambda x: f"`{x[0]}` -> `{x[1]}`",
             )
         )
 
-        md_lines.append("## Bloqueos por hora (UTC)")
+        md_lines.append("## Blocks per hour (UTC)")
         md_lines.append(md_hourly_table(hourly))
 
         if args.geo:
-            md_lines.append(f"## Geolocalización (máx {args.geo_limit} IPs)")
+            md_lines.append(f"## Geolocation (max {args.geo_limit} IPs)")
             md_lines.append(md_geo_table(geo_rows))
             if suspicious_rows:
-                md_lines.append("## Sospecha de VPN/Proxy/Hosting (heurística)")
+                md_lines.append("## VPN/Proxy/Hosting suspicion (heuristic)")
                 md_lines.append(md_suspicious_table(suspicious_rows))
 
         if plot_paths:
-            md_lines.append("## Gráficos")
+            md_lines.append("## Charts")
             md_dir = Path(args.md_out).parent
             for label, img in plot_paths:
                 rel = os.path.relpath(img, md_dir)
@@ -848,7 +858,7 @@ def main():
             md_lines.append("")
 
         Path(args.md_out).write_text("\n".join(md_lines))
-        print(f"\nReporte Markdown generado en: {args.md_out}")
+        print(f"\nMarkdown report generated at: {args.md_out}")
 
     if geo_cache_path:
         save_geo_cache(geo_cache_path, geo_cache)

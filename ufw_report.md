@@ -1,105 +1,124 @@
 # UFW Block Report
 
 - Log: `/var/log/ufw.log`
-- Ventana: últimas 24.0 horas
-- Total de bloqueos: 230
-- IPs de origen únicas: 152
-- Puertos destino únicos: 175
+- Window: last 24.0 hours
+- Total blocks: 4484
+- Unique source IPs: 1770
+- Unique destination ports: 2684
 
-## Top puertos destino
-| # | Puerto destino | Conteo | % |
+## Top destination ports
+| # | Destination port | Count | % |
 | ---: | --- | ---: | ---: |
-| 1 | `8333` | 17 | 7.4% |
-| 2 | `23` | 9 | 3.9% |
-| 3 | `44489` | 6 | 2.6% |
-| 4 | `443` | 6 | 2.6% |
-| 5 | `44532` | 4 | 1.7% |
-| 6 | `45034` | 3 | 1.3% |
-| 7 | `56664` | 3 | 1.3% |
-| 8 | `8081` | 2 | 0.9% |
-| 9 | `5061` | 2 | 0.9% |
-| 10 | `2375` | 2 | 0.9% |
-| 11 | `62082` | 2 | 0.9% |
-| 12 | `56726` | 2 | 0.9% |
-| 13 | `162` | 2 | 0.9% |
-| 14 | `44499` | 2 | 0.9% |
-| 15 | `53` | 2 | 0.9% |
+| 1 | `8333` | 403 | 9.0% |
+| 2 | `23` | 97 | 2.2% |
+| 3 | `443` | 96 | 2.1% |
+| 4 | `8080` | 48 | 1.1% |
+| 5 | `22` | 44 | 1.0% |
+| 6 | `3389` | 31 | 0.7% |
+| 7 | `8728` | 27 | 0.6% |
+| 8 | `5060` | 19 | 0.4% |
+| 9 | `8443` | 19 | 0.4% |
+| 10 | `1433` | 17 | 0.4% |
+| 11 | `53` | 17 | 0.4% |
+| 12 | `5000` | 16 | 0.4% |
+| 13 | `8092` | 15 | 0.3% |
+| 14 | `2222` | 15 | 0.3% |
+| 15 | `2323` | 14 | 0.3% |
 
-## Top IPs origen
-| # | IP origen | Conteo | % |
+## Top source IPs
+| # | Source IP | Count | % |
 | ---: | --- | ---: | ---: |
-| 1 | `194.180.49.70` | 16 | 7.0% |
-| 2 | `216.180.246.43` | 8 | 3.5% |
-| 3 | `79.124.62.230` | 7 | 3.0% |
-| 4 | `151.101.218.73` | 6 | 2.6% |
-| 5 | `147.229.8.240` | 5 | 2.2% |
-| 6 | `184.31.2.80` | 5 | 2.2% |
-| 7 | `109.236.61.34` | 5 | 2.2% |
-| 8 | `185.133.35.14` | 4 | 1.7% |
-| 9 | `85.217.149.12` | 4 | 1.7% |
-| 10 | `103.99.170.132` | 4 | 1.7% |
-| 11 | `54.224.145.4` | 3 | 1.3% |
-| 12 | `185.133.35.13` | 3 | 1.3% |
-| 13 | `149.50.103.48` | 3 | 1.3% |
-| 14 | `79.124.62.126` | 3 | 1.3% |
-| 15 | `85.217.149.26` | 3 | 1.3% |
+| 1 | `194.180.49.70` | 137 | 3.1% |
+| 2 | `45.147.46.32` | 116 | 2.6% |
+| 3 | `147.229.8.240` | 110 | 2.5% |
+| 4 | `46.31.77.187` | 103 | 2.3% |
+| 5 | `185.241.206.91` | 81 | 1.8% |
+| 6 | `79.124.62.230` | 77 | 1.7% |
+| 7 | `79.124.62.126` | 68 | 1.5% |
+| 8 | `109.236.61.34` | 55 | 1.2% |
+| 9 | `151.101.218.73` | 53 | 1.2% |
+| 10 | `185.91.127.107` | 45 | 1.0% |
+| 11 | `103.99.170.132` | 43 | 1.0% |
+| 12 | `208.68.7.148` | 42 | 0.9% |
+| 13 | `103.99.170.131` | 40 | 0.9% |
+| 14 | `115.231.78.11` | 30 | 0.7% |
+| 15 | `129.132.30.218` | 23 | 0.5% |
 
-## Top IP origen -> puerto destino
-| # | IP origen -> puerto | Conteo | % |
+## Top source IP -> destination port
+| # | Source IP -> port | Count | % |
 | ---: | --- | ---: | ---: |
-| 1 | `151.101.218.73` -> `44489` | 6 | 2.6% |
-| 2 | `147.229.8.240` -> `8333` | 5 | 2.2% |
-| 3 | `185.133.35.14` -> `44532` | 4 | 1.7% |
-| 4 | `103.99.170.132` -> `8333` | 4 | 1.7% |
-| 5 | `54.224.145.4` -> `45034` | 3 | 1.3% |
-| 6 | `184.31.2.80` -> `56664` | 3 | 1.3% |
-| 7 | `17.57.144.152` -> `62082` | 2 | 0.9% |
-| 8 | `100.24.10.103` -> `8333` | 2 | 0.9% |
-| 9 | `184.31.2.80` -> `56726` | 2 | 0.9% |
-| 10 | `185.133.35.13` -> `44499` | 2 | 0.9% |
-| 11 | `95.93.214.23` -> `23` | 2 | 0.9% |
-| 12 | `103.99.170.131` -> `8333` | 2 | 0.9% |
-| 13 | `109.236.61.34` -> `8092` | 2 | 0.9% |
-| 14 | `185.244.104.2` -> `443` | 2 | 0.9% |
-| 15 | `85.217.149.13` -> `52311` | 1 | 0.4% |
+| 1 | `147.229.8.240` -> `8333` | 110 | 2.5% |
+| 2 | `103.99.170.132` -> `8333` | 43 | 1.0% |
+| 3 | `208.68.7.148` -> `8333` | 42 | 0.9% |
+| 4 | `103.99.170.131` -> `8333` | 40 | 0.9% |
+| 5 | `129.132.30.218` -> `8333` | 23 | 0.5% |
+| 6 | `109.236.61.34` -> `8080` | 20 | 0.4% |
+| 7 | `204.76.203.83` -> `22` | 19 | 0.4% |
+| 8 | `103.102.230.4` -> `8728` | 18 | 0.4% |
+| 9 | `45.11.57.212` -> `8333` | 18 | 0.4% |
+| 10 | `109.236.61.34` -> `8092` | 13 | 0.3% |
+| 11 | `109.236.61.34` -> `5000` | 13 | 0.3% |
+| 12 | `72.65.246.82` -> `8333` | 11 | 0.2% |
+| 13 | `185.244.104.2` -> `443` | 10 | 0.2% |
+| 14 | `100.24.10.103` -> `8333` | 10 | 0.2% |
+| 15 | `109.236.61.34` -> `443` | 9 | 0.2% |
 
-## Bloqueos por hora (UTC)
-| Hora (UTC) | Conteo | % |
+## Blocks per hour (UTC)
+| Hour (UTC) | Count | % |
 | :--- | ---: | ---: |
-| 2025-12-10 16:00:00:00 | 24 | 10.4% |
-| 2025-12-10 17:00:00:00 | 197 | 85.7% |
-| 2025-12-10 18:00:00:00 | 6 | 2.6% |
-| 2025-12-10 19:00:00:00 | 3 | 1.3% |
+| 2025-12-10 17:00:00:00 | 90 | 2.0% |
+| 2025-12-10 18:00:00:00 | 191 | 4.3% |
+| 2025-12-10 19:00:00:00 | 180 | 4.0% |
+| 2025-12-10 20:00:00:00 | 180 | 4.0% |
+| 2025-12-10 21:00:00:00 | 180 | 4.0% |
+| 2025-12-10 22:00:00:00 | 180 | 4.0% |
+| 2025-12-10 23:00:00:00 | 189 | 4.2% |
+| 2025-12-11 00:00:00:00 | 247 | 5.5% |
+| 2025-12-11 01:00:00:00 | 180 | 4.0% |
+| 2025-12-11 02:00:00:00 | 180 | 4.0% |
+| 2025-12-11 03:00:00:00 | 192 | 4.3% |
+| 2025-12-11 04:00:00:00 | 180 | 4.0% |
+| 2025-12-11 05:00:00:00 | 180 | 4.0% |
+| 2025-12-11 06:00:00:00 | 180 | 4.0% |
+| 2025-12-11 07:00:00:00 | 180 | 4.0% |
+| 2025-12-11 08:00:00:00 | 180 | 4.0% |
+| 2025-12-11 09:00:00:00 | 199 | 4.4% |
+| 2025-12-11 10:00:00:00 | 196 | 4.4% |
+| 2025-12-11 11:00:00:00 | 197 | 4.4% |
+| 2025-12-11 12:00:00:00 | 181 | 4.0% |
+| 2025-12-11 13:00:00:00 | 180 | 4.0% |
+| 2025-12-11 14:00:00:00 | 189 | 4.2% |
+| 2025-12-11 15:00:00:00 | 179 | 4.0% |
+| 2025-12-11 16:00:00:00 | 182 | 4.1% |
+| 2025-12-11 17:00:00:00 | 92 | 2.1% |
 
-## Geolocalización (máx 15 IPs)
-| # | IP origen | Conteo | % | Ubicación | Red / sospecha |
+## Geolocation (max 15 IPs)
+| # | Source IP | Count | % | Location | Network / hint |
 | ---: | --- | ---: | ---: | --- | --- |
-| 1 | `194.180.49.70` | 16 | 20.3% | Germany / Bavaria / Berngau / HostSlick | Sin señal aparente |
-| 2 | `216.180.246.43` | 8 | 10.1% | France / Île-de-France / Massy | Sin señal aparente |
-| 3 | `79.124.62.230` | 7 | 8.9% | Seychelles / La Rivière Anglaise / Victoria / Internet Solutions & Innovations LTD | Sin señal aparente |
-| 4 | `151.101.218.73` | 6 | 7.6% | Argentina / Buenos Aires F.D. / Buenos Aires / Fastly, Inc. | CDN/Edge (fastly) |
-| 5 | `147.229.8.240` | 5 | 6.3% | Czechia / South Moravian / Tišnov / VUTBR | Sin señal aparente |
-| 6 | `184.31.2.80` | 5 | 6.3% | Argentina / Buenos Aires F.D. / Buenos Aires / Akamai Technologies, Inc. | CDN/Edge (akamai) |
-| 7 | `109.236.61.34` | 5 | 6.3% | The Netherlands / North Holland / Amsterdam / ColocationX Ltd | Hosting/Cloud (colo) |
-| 8 | `185.133.35.14` | 4 | 5.1% | Brazil / São Paulo / Casa Verde / Linked Store Brasil Criacao E Desenvol De Software | Sin señal aparente |
-| 9 | `85.217.149.12` | 4 | 5.1% | United States / New York / New York / Modat B.V | Sin señal aparente |
-| 10 | `103.99.170.132` | 4 | 5.1% | United States / California / San Jose / WIZ K K | Sin señal aparente |
-| 11 | `54.224.145.4` | 3 | 3.8% | United States / Virginia / Ashburn / AWS EC2 (us-east-1) | Hosting/Cloud (aws) |
-| 12 | `185.133.35.13` | 3 | 3.8% | Brazil / São Paulo / Casa Verde / Linked Store Brasil Criacao E Desenvol De Software | Sin señal aparente |
-| 13 | `149.50.103.48` | 3 | 3.8% | Poland / Mazovia / Warsaw / Meverywhere sp.zo.o | Sin señal aparente |
-| 14 | `79.124.62.126` | 3 | 3.8% | Seychelles / La Rivière Anglaise / Victoria / Internet Solutions & Innovations LTD | Sin señal aparente |
-| 15 | `85.217.149.26` | 3 | 3.8% | United States / New York / New York / Modat B.V | Sin señal aparente |
+| 1 | `194.180.49.70` | 137 | 13.4% | Germany / Bavaria / Berngau / HostSlick | No apparent signal |
+| 2 | `45.147.46.32` | 116 | 11.3% | Turkey / Istanbul / Beyoğlu / Hosting Dunyam Bilisim Teknolojileri Ticaret Limited Sirketi | No apparent signal |
+| 3 | `147.229.8.240` | 110 | 10.8% | Czechia / South Moravian / Tišnov / VUTBR | No apparent signal |
+| 4 | `46.31.77.187` | 103 | 10.1% | Türkiye / Istanbul / Beylikduzu / Hosting Dunyam Bilisim Teknolojileri Tic. Ltd. STI | No apparent signal |
+| 5 | `185.241.206.91` | 81 | 7.9% | The Netherlands / North Holland / Amsterdam / ESTOXY OU | No apparent signal |
+| 6 | `79.124.62.230` | 77 | 7.5% | Seychelles / La Rivière Anglaise / Victoria / Internet Solutions & Innovations LTD | No apparent signal |
+| 7 | `79.124.62.126` | 68 | 6.6% | Seychelles / La Rivière Anglaise / Victoria / Internet Solutions & Innovations LTD | No apparent signal |
+| 8 | `109.236.61.34` | 55 | 5.4% | The Netherlands / North Holland / Amsterdam / ColocationX Ltd | Hosting/Cloud (colo) |
+| 9 | `151.101.218.73` | 53 | 5.2% | Argentina / Buenos Aires F.D. / Buenos Aires / Fastly, Inc. | CDN/Edge (fastly) |
+| 10 | `185.91.127.107` | 45 | 4.4% | The Netherlands / Limburg / Eygelshoven / Tube VPS | No apparent signal |
+| 11 | `103.99.170.132` | 43 | 4.2% | United States / California / San Jose / WIZ K K | No apparent signal |
+| 12 | `208.68.7.148` | 42 | 4.1% | United States / New York / New York / Privacy Services | No apparent signal |
+| 13 | `103.99.170.131` | 40 | 3.9% | United States / California / San Jose / WIZ K K | No apparent signal |
+| 14 | `115.231.78.11` | 30 | 2.9% | China / Zhejiang / Hangzhou / Hangzhou Duchuang Keji Co., Ltd | No apparent signal |
+| 15 | `129.132.30.218` | 23 | 2.2% | Switzerland / Zurich / Zurich / Swiss Federal Institute of Technology Zurich | No apparent signal |
 
-## Sospecha de VPN/Proxy/Hosting (heurística)
-| # | IP origen | Conteo | % | Sospecha | Ubicación |
+## VPN/Proxy/Hosting suspicion (heuristic)
+| # | Source IP | Count | % | Suspicion | Location |
 | ---: | --- | ---: | ---: | --- | --- |
-| 1 | `151.101.218.73` | 6 | 31.6% | CDN/Edge (fastly) | Argentina / Buenos Aires F.D. / Buenos Aires / Fastly, Inc. |
-| 2 | `184.31.2.80` | 5 | 26.3% | CDN/Edge (akamai) | Argentina / Buenos Aires F.D. / Buenos Aires / Akamai Technologies, Inc. |
-| 3 | `109.236.61.34` | 5 | 26.3% | Hosting/Cloud (colo) | The Netherlands / North Holland / Amsterdam / ColocationX Ltd |
-| 4 | `54.224.145.4` | 3 | 15.8% | Hosting/Cloud (aws) | United States / Virginia / Ashburn / AWS EC2 (us-east-1) |
+| 1 | `109.236.61.34` | 55 | 50.9% | Hosting/Cloud (colo) | The Netherlands / North Holland / Amsterdam / ColocationX Ltd |
+| 2 | `151.101.218.73` | 53 | 49.1% | CDN/Edge (fastly) | Argentina / Buenos Aires F.D. / Buenos Aires / Fastly, Inc. |
 
-## Gráficos
-![Top puertos destino](ufw_plots/ufw_top_ports.jpg)
-![Top IPs origen](ufw_plots/ufw_top_ips.jpg)
-![Bloqueos por hora (UTC)](ufw_plots/ufw_hourly.jpg)
-![Mapa de bloqueos](ufw_plots/ufw_geo_map.jpg)
+## Charts
+![Top destination ports](ufw_plots/ufw_top_ports.jpg)
+![Top source IPs](ufw_plots/ufw_top_ips.jpg)
+![Blocks per hour (UTC)](ufw_plots/ufw_hourly.jpg)
+![Block map](ufw_plots/ufw_geo_map.jpg)

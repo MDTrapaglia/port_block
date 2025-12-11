@@ -1,10 +1,23 @@
 {
   "100.24.10.103": {
+    "asn": null,
     "city": null,
     "country": null,
+    "isp": null,
     "label": "United States / Virginia / Ashburn / AWS EC2 (us-east-1)",
     "lat": 39.0438,
-    "lon": -77.4874
+    "lon": -77.4874,
+    "org": null
+  },
+  "103.99.170.131": {
+    "asn": "AS54415 WIZ K.K.",
+    "city": "San Jose",
+    "country": "United States",
+    "isp": "WIZ K.K.",
+    "label": "United States / California / San Jose / WIZ K K",
+    "lat": 37.3388,
+    "lon": -121.8916,
+    "org": "WIZ K K"
   },
   "103.99.170.132": {
     "asn": null,
@@ -26,7 +39,37 @@
     "lon": 4.84335,
     "org": null
   },
+  "115.231.78.11": {
+    "asn": "AS58461 CT-HangZhou-IDC",
+    "city": "Hangzhou",
+    "country": "China",
+    "isp": "Chinanet",
+    "label": "China / Zhejiang / Hangzhou / Hangzhou Duchuang Keji Co., Ltd",
+    "lat": 30.2742,
+    "lon": 120.155,
+    "org": "Hangzhou Duchuang Keji Co., Ltd"
+  },
   "120.85.117.185": "China / Guangdong / Guangzhou",
+  "129.132.30.218": {
+    "asn": "AS559 SWITCH",
+    "city": "Zurich",
+    "country": "Switzerland",
+    "isp": "ETH",
+    "label": "Switzerland / Zurich / Zurich / Swiss Federal Institute of Technology Zurich",
+    "lat": 47.3826,
+    "lon": 8.5351,
+    "org": "Swiss Federal Institute of Technology Zurich"
+  },
+  "130.41.68.134": {
+    "asn": "AS394089 Google LLC",
+    "city": "Buenos Aires",
+    "country": "Argentina",
+    "isp": "Google LLC",
+    "label": "Argentina / Buenos Aires F.D. / Buenos Aires / Palo Alto Networks",
+    "lat": -34.6142,
+    "lon": -58.3811,
+    "org": "Palo Alto Networks"
+  },
   "147.229.8.240": {
     "asn": null,
     "city": null,
@@ -57,12 +100,32 @@
     "lon": -58.3811,
     "org": null
   },
+  "17.249.252.4": {
+    "asn": "AS714 Apple Inc.",
+    "city": "Cupertino",
+    "country": "United States",
+    "isp": "Apple Inc.",
+    "label": "United States / California / Cupertino / Apple Inc",
+    "lat": 37.3322,
+    "lon": -122.011,
+    "org": "Apple Inc"
+  },
   "17.57.144.152": {
     "city": null,
     "country": null,
     "label": "United States / California / Cupertino / Apple Inc",
     "lat": 37.3322,
     "lon": -122.011
+  },
+  "170.51.247.42": {
+    "asn": "AS11664 Techtel LMDS Comunicaciones Interactivas S.A.",
+    "city": "Buenos Aires",
+    "country": "Argentina",
+    "isp": "Techtel LMDS Comunicaciones Interactivas S.A.",
+    "label": "Argentina / Buenos Aires F.D. / Buenos Aires / AMX Argentina S.A",
+    "lat": -34.6037,
+    "lon": -58.3821,
+    "org": "AMX Argentina S.A"
   },
   "176.65.148.81": "The Netherlands / Limburg / Eygelshoven / Pfcloud UG",
   "184.31.2.80": {
@@ -95,6 +158,26 @@
     "lon": -46.6577,
     "org": null
   },
+  "185.241.206.91": {
+    "asn": "AS3920 ESTOXY OU",
+    "city": "Amsterdam",
+    "country": "The Netherlands",
+    "isp": "ESTOXY OU",
+    "label": "The Netherlands / North Holland / Amsterdam / ESTOXY OU",
+    "lat": 52.3759,
+    "lon": 4.8975,
+    "org": "ESTOXY OU"
+  },
+  "185.91.127.107": {
+    "asn": "AS49581 Ferdinand Zink trading as Tube-Hosting",
+    "city": "Eygelshoven",
+    "country": "The Netherlands",
+    "isp": "Ferdinand Zink trading as Tube-Hosting",
+    "label": "The Netherlands / Limburg / Eygelshoven / Tube VPS",
+    "lat": 50.8933,
+    "lon": 6.05805,
+    "org": "Tube VPS"
+  },
   "193.34.213.150": "Poland / Mazovia / Warsaw / SKYTECHNOLOGY",
   "194.180.49.70": {
     "asn": null,
@@ -108,6 +191,26 @@
   },
   "20.98.152.158": "United States / Iowa / Des Moines / Microsoft Azure Cloud (centralus)",
   "206.168.34.128": "United States / Illinois / Chicago / Censys, Inc.",
+  "208.68.7.148": {
+    "asn": "AS397444 Overkill Interbuzz LLC",
+    "city": "New York",
+    "country": "United States",
+    "isp": "Overkill Interbuzz LLC",
+    "label": "United States / New York / New York / Privacy Services",
+    "lat": 40.8,
+    "lon": -73.9763,
+    "org": "Privacy Services"
+  },
+  "216.180.246.182": {
+    "asn": "AS396982 Google LLC",
+    "city": "Massy",
+    "country": "France",
+    "isp": "Internet Utilities NA LLC",
+    "label": "France / \u00cele-de-France / Massy / Internet Utilities NA LLC",
+    "lat": 48.7217,
+    "lon": 2.28306,
+    "org": ""
+  },
   "216.180.246.43": {
     "asn": null,
     "city": "Massy",
@@ -119,6 +222,26 @@
     "org": null
   },
   "23.94.31.42": "United States / New York / Buffalo",
+  "45.147.46.32": {
+    "asn": "AS212219 HOSTING DUNYAM",
+    "city": "Beyo\u011flu",
+    "country": "Turkey",
+    "isp": "Hosting Dunyam Bilisim Teknolojileri Ticaret Limited Sirketi",
+    "label": "Turkey / Istanbul / Beyo\u011flu / Hosting Dunyam Bilisim Teknolojileri Ticaret Limited Sirketi",
+    "lat": 41.052,
+    "lon": 28.9464,
+    "org": "Hosting Dunyam Bilisim Teknolojileri Ticaret Limited Sirketi"
+  },
+  "46.31.77.187": {
+    "asn": "AS212219 HOSTING DUNYAM",
+    "city": "Beylikduzu",
+    "country": "T\u00fcrkiye",
+    "isp": "Hosting Dunyam Bilisim Teknolojileri Ticaret Limited Sirketi",
+    "label": "T\u00fcrkiye / Istanbul / Beylikduzu / Hosting Dunyam Bilisim Teknolojileri Tic. Ltd. STI",
+    "lat": 40.9959,
+    "lon": 28.8275,
+    "org": "Hosting Dunyam Bilisim Teknolojileri Tic. Ltd. STI"
+  },
   "54.224.145.4": {
     "asn": null,
     "city": null,
