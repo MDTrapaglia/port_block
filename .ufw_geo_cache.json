@@ -9,6 +9,16 @@
     "lon": -77.4874,
     "org": null
   },
+  "103.102.230.4": {
+    "asn": "AS62563 GLOBALTELEHOST Corp.",
+    "city": "Yakutsk",
+    "country": "Russia",
+    "isp": "GLOBALTELEHOST Corp.",
+    "label": "Russia / Sakha / Yakutsk / mkr. Rostoshi",
+    "lat": 62.0311,
+    "lon": 129.723,
+    "org": "mkr. Rostoshi"
+  },
   "103.99.170.131": {
     "asn": "AS54415 WIZ K.K.",
     "city": "San Jose",
@@ -222,6 +232,26 @@
     "org": null
   },
   "23.94.31.42": "United States / New York / Buffalo",
+  "31.14.32.8": {
+    "asn": "AS201401 NewVM B.V.",
+    "city": "Amsterdam",
+    "country": "The Netherlands",
+    "isp": "NewVM B.V.",
+    "label": "The Netherlands / North Holland / Amsterdam / Modat",
+    "lat": 52.3676,
+    "lon": 4.90414,
+    "org": "Modat"
+  },
+  "45.11.57.212": {
+    "asn": "AS6698 Virtual Systems LLC",
+    "city": "Kyiv",
+    "country": "Ukraine",
+    "isp": "Virtual Systems LLC",
+    "label": "Ukraine / Kyiv City / Kyiv / Virtual Systems LLC",
+    "lat": 50.458,
+    "lon": 30.5303,
+    "org": "Virtual Systems LLC"
+  },
   "45.147.46.32": {
     "asn": "AS212219 HOSTING DUNYAM",
     "city": "Beyo\u011flu",
@@ -241,6 +271,16 @@
     "lat": 40.9959,
     "lon": 28.8275,
     "org": "Hosting Dunyam Bilisim Teknolojileri Tic. Ltd. STI"
+  },
+  "51.161.174.170": {
+    "asn": "AS16276 OVH SAS",
+    "city": "North Sydney",
+    "country": "Australia",
+    "isp": "OVH SAS",
+    "label": "Australia / New South Wales / North Sydney / OVH Australia PTY LTD",
+    "lat": -33.8401,
+    "lon": 151.209,
+    "org": "OVH Australia PTY LTD"
   },
   "54.224.145.4": {
     "asn": null,
@@ -279,6 +319,16 @@
     "label": "United Kingdom / England / London / Sofcompany speedy",
     "lat": 51.5081,
     "lon": -0.1278
+  },
+  "85.217.140.1": {
+    "asn": null,
+    "city": "Paris",
+    "country": "France",
+    "isp": "Modat B.V",
+    "label": "France / \u00cele-de-France / Paris / Modat B.V",
+    "lat": 48.8575,
+    "lon": 2.35138,
+    "org": "Modat B.V"
   },
   "85.217.140.7": "France / \u00cele-de-France / Paris / Modat B.V",
   "85.217.149.12": {

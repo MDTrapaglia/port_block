@@ -143,6 +143,14 @@ VPN_KEYWORDS = (
     "tor-exit",
     "tor exit",
 )
+
+DARK_FIG_BG = "#0b1724"
+DARK_PANEL_BG = "#13263b"
+DARK_TEXT = "#e9f1ff"
+DARK_TICK = "#c7d4e6"
+DARK_GRID = "#2f4d6a"
+DARK_SPINE = "#3a536b"
+DARK_TITLE = "#f5f9ff"
 HOSTING_KEYWORDS = (
     "aws",
     "amazon",
@@ -426,6 +434,29 @@ def build_geo_rows(
     return rows
 
 
+def geo_location_counter(rows: List[Dict[str, object]]) -> collections.Counter:
+    counter: collections.Counter = collections.Counter()
+    for row in rows:
+        info = _coerce_geo_record(row.get("info"))
+        city = str(info.get("city") or "").strip()
+        country = str(info.get("country") or "").strip()
+        if city and country:
+            label = f"{city}, {country}"
+        elif country:
+            label = country
+        elif city:
+            label = city
+        else:
+            label = str(info.get("label") or row.get("ip") or "Unknown")
+        try:
+            count = int(row.get("count", 0))
+        except (TypeError, ValueError):
+            count = 0
+        if count:
+            counter[label] += count
+    return counter
+
+
 def md_geo_table(rows: List[Dict[str, object]]) -> str:
     if not rows:
         return "_No data_\n"
@@ -470,6 +501,19 @@ def _get_plt():
     import matplotlib.pyplot as plt
 
     return plt
+
+
+def _apply_dark_axes(fig, ax, grid_axis: Optional[str] = None):
+    fig.patch.set_facecolor(DARK_FIG_BG)
+    ax.set_facecolor(DARK_PANEL_BG)
+    ax.xaxis.label.set_color(DARK_TEXT)
+    ax.yaxis.label.set_color(DARK_TEXT)
+    ax.title.set_color(DARK_TITLE)
+    ax.tick_params(colors=DARK_TICK)
+    for spine in ax.spines.values():
+        spine.set_color(DARK_SPINE)
+    if grid_axis:
+        ax.grid(True, axis=grid_axis, linestyle="--", linewidth=0.8, color=DARK_GRID, alpha=0.55)
 
 
 def _get_world_image(cache_path: Path, plt):
@@ -521,7 +565,7 @@ def _draw_world_map(ax, plt):
     Draw a base map in equirectangular projection using GeoJSON polygons.
     Avoids projection offsets that happen with some downloaded images.
     """
-    bg_color = "#0b1724"
+    bg_color = DARK_FIG_BG
     data = _load_world_geojson(WORLD_GEOJSON_CACHE)
     if not data:
         ax.set_facecolor(bg_color)
@@ -620,15 +664,15 @@ def plot_bar(counter: collections.Counter, outfile: Path, title: str, xlabel: st
     outfile.parent.mkdir(parents=True, exist_ok=True)
 
     fig, ax = plt.subplots(figsize=(9, 4))
-    ax.bar(range(len(labels)), counts, color="#1f77b4")
+    ax.bar(range(len(labels)), counts, color="#5fb0ff")
     ax.set_title(title)
     ax.set_xlabel(xlabel)
     ax.set_ylabel("Count")
     ax.set_xticks(range(len(labels)))
     ax.set_xticklabels(labels, rotation=45, ha="right")
-    ax.grid(True, axis="y", linestyle="--", alpha=0.4)
+    _apply_dark_axes(fig, ax, grid_axis="y")
     fig.tight_layout()
-    fig.savefig(outfile, dpi=150)
+    fig.savefig(outfile, dpi=150, facecolor=fig.get_facecolor())
     plt.close(fig)
     return outfile
 
@@ -650,9 +694,9 @@ def plot_hourly(hourly: collections.Counter, outfile: Path):
     ax.set_ylabel("Count")
     ax.set_xticks(range(len(labels)))
     ax.set_xticklabels(labels, rotation=45, ha="right")
-    ax.grid(True, linestyle="--", alpha=0.4)
+    _apply_dark_axes(fig, ax, grid_axis="y")
     fig.tight_layout()
-    fig.savefig(outfile, dpi=150)
+    fig.savefig(outfile, dpi=150, facecolor=fig.get_facecolor())
     plt.close(fig)
     return outfile
 
@@ -670,6 +714,9 @@ def plot_geo_bubbles(points: List[Dict[str, object]], outfile: Path):
     lats = [p["lat"] for p in clustered]
     counts = [p["count"] for p in clustered]
     max_count = max(counts)
+    min_count = min(counts)
+    norm_max = max_count if max_count != min_count else max_count + 1
+    norm = plt.Normalize(vmin=min_count, vmax=norm_max or 1)
     min_size = 40
     max_size = 360
     sizes = [
@@ -678,9 +725,8 @@ def plot_geo_bubbles(points: List[Dict[str, object]], outfile: Path):
     ]
 
     cmap = plt.cm.magma
-    colors = [cmap(0.25 + 0.65 * (c / max_count if max_count else 0)) for c in counts]
 
-    bg_color = "#0b1724"
+    bg_color = DARK_FIG_BG
 
     fig, ax = plt.subplots(figsize=(12, 6))
     fig.patch.set_facecolor(bg_color)
@@ -693,22 +739,72 @@ def plot_geo_bubbles(points: List[Dict[str, object]], outfile: Path):
         else:
             ax.set_facecolor(bg_color)
 
-    ax.scatter(
+    sc = ax.scatter(
         lons,
         lats,
         s=sizes,
         alpha=0.78,
-        c=colors,
+        c=counts,
+        cmap=cmap,
+        norm=norm,
         edgecolor="#0b1724",
         linewidth=0.6,
         zorder=1,
     )
 
-    for p in sorted(clustered, key=lambda x: x["count"], reverse=True)[:5]:
+    cbar = fig.colorbar(sc, ax=ax, shrink=0.9, pad=0.02)
+    cbar.set_label("Block count", color="#e9f1ff")
+    cbar.ax.tick_params(colors="#c7d4e6")
+    cbar.outline.set_edgecolor("#3a536b")
+
+    # Place labels for every bubble with simple offset choices to reduce overlap.
+    label_offsets = [
+        (0.0, 0.0),
+        (3.0, 2.2),
+        (3.0, -2.2),
+        (-3.0, 2.2),
+        (-3.0, -2.2),
+        (4.5, 0.0),
+        (0.0, 4.5),
+        (0.0, -4.5),
+        (6.0, 3.0),
+        (6.0, -3.0),
+        (-6.0, 3.0),
+        (-6.0, -3.0),
+    ]
+    placed_positions: List[Tuple[float, float]] = []
+
+    def pick_offset(x: float, y: float) -> Tuple[float, float]:
+        best = label_offsets[0]
+        best_score = -1.0
+        for dx, dy in label_offsets:
+            px, py = x + dx, y + dy
+            min_dist = min(
+                (((px - ox) ** 2 + (py - oy) ** 2) ** 0.5 for ox, oy in placed_positions),
+                default=1e9,
+            )
+            if min_dist > best_score:
+                best_score = min_dist
+                best = (dx, dy)
+        placed_positions.append((x + best[0], y + best[1]))
+        return best
+
+    for p in sorted(clustered, key=lambda x: x["count"], reverse=True):
+        label = str(p.get("label", "")) or str(p.get("ip", ""))
+        dx, dy = pick_offset(float(p["lon"]), float(p["lat"]))
+        if dx or dy:
+            ax.plot(
+                [p["lon"], p["lon"] + dx],
+                [p["lat"], p["lat"] + dy],
+                color="#c7d4e6",
+                linewidth=0.4,
+                alpha=0.6,
+                zorder=1.5,
+            )
         ax.text(
-            p["lon"],
-            p["lat"],
-            str(p.get("label", "")),
+            p["lon"] + dx,
+            p["lat"] + dy,
+            label,
             fontsize=8,
             ha="center",
             va="center",
@@ -719,15 +815,15 @@ def plot_geo_bubbles(points: List[Dict[str, object]], outfile: Path):
 
     ax.set_xlim(-180, 180)
     ax.set_ylim(-90, 90)
-    ax.set_xticks(range(-180, 181, 60))
-    ax.set_yticks(range(-90, 91, 30))
-    ax.set_xlabel("Longitude", color="#dfe9f5")
-    ax.set_ylabel("Latitude", color="#dfe9f5")
-    ax.set_title("Blocks by location (circle size ~ count)", color="#f5f9ff")
-    ax.tick_params(colors="#c7d4e6")
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_xlabel("")
+    ax.set_ylabel("")
+    ax.set_title("Blocks by location (size & color ~ count)", color="#f5f9ff")
+    ax.tick_params(length=0)
     for spine in ax.spines.values():
-        spine.set_edgecolor("#3a536b")
-    ax.grid(True, linestyle="--", alpha=0.45, color="#2b475d")
+        spine.set_visible(False)
+    ax.grid(False)
     fig.tight_layout()
     fig.savefig(outfile, dpi=150)
     plt.close(fig)
@@ -744,6 +840,7 @@ def main():
     geo_rows: List[Dict[str, object]] = []
     suspicious_rows: List[Dict[str, object]] = []
     geo_points: List[Dict[str, object]] = []
+    location_counts: collections.Counter = collections.Counter()
 
     since_dt = None
     if args.since_hours:
@@ -771,6 +868,7 @@ def main():
     if args.geo:
         print(f"\nGeolocation (max {args.geo_limit} IPs):")
         geo_rows = build_geo_rows(ips, geo_cache, args.geo_limit)
+        location_counts = geo_location_counter(geo_rows)
         suspicious_rows = [r for r in geo_rows if r.get("assessment", {}).get("suspicious")]
         for row in geo_rows:
             info = _coerce_geo_record(row.get("info"))
@@ -798,11 +896,23 @@ def main():
         plots_dir = Path(args.plots_dir)
         ports_img = plot_bar(ports, plots_dir / "ufw_top_ports.jpg", "Top destination ports", "Port", args.top_ports)
         ips_img = plot_bar(ips, plots_dir / "ufw_top_ips.jpg", "Top source IPs", "IP", args.top_ips)
+        locations_img = (
+            plot_bar(
+                location_counts,
+                plots_dir / "ufw_top_locations.jpg",
+                "Top source countries/cities",
+                "Location",
+                args.top_ips,
+            )
+            if location_counts
+            else None
+        )
         hourly_img = plot_hourly(hourly, plots_dir / "ufw_hourly.jpg")
         geo_img = plot_geo_bubbles(geo_points, plots_dir / "ufw_geo_map.jpg") if geo_points else None
         for label, img in [
             ("Top destination ports", ports_img),
             ("Top source IPs", ips_img),
+            ("Top source countries/cities", locations_img),
             ("Blocks per hour (UTC)", hourly_img),
             ("Block map", geo_img),
         ]:
@@ -843,6 +953,8 @@ def main():
         md_lines.append(md_hourly_table(hourly))
 
         if args.geo:
+            md_lines.append("## Top source countries/cities")
+            md_lines.append(md_table(location_counts, "Location", args.top_ips))
             md_lines.append(f"## Geolocation (max {args.geo_limit} IPs)")
             md_lines.append(md_geo_table(geo_rows))
             if suspicious_rows:
