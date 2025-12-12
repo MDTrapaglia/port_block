@@ -653,7 +653,15 @@ def cluster_geo_points(points: List[Dict[str, object]], cell_size: float = 2.5) 
     return clustered
 
 
-def plot_bar(counter: collections.Counter, outfile: Path, title: str, xlabel: str, limit: int = 10):
+def plot_bar(
+    counter: collections.Counter,
+    outfile: Path,
+    title: str,
+    xlabel: str,
+    limit: int = 10,
+    *,
+    horizontal: bool = False,
+):
     if not counter:
         return None
     plt = _get_plt()
@@ -663,14 +671,27 @@ def plot_bar(counter: collections.Counter, outfile: Path, title: str, xlabel: st
     outfile = Path(outfile)
     outfile.parent.mkdir(parents=True, exist_ok=True)
 
-    fig, ax = plt.subplots(figsize=(9, 4))
-    ax.bar(range(len(labels)), counts, color="#5fb0ff")
+    height = max(4.0, 0.6 * len(labels)) if horizontal else 4
+    width = 10 if horizontal else 9
+    fig, ax = plt.subplots(figsize=(width, height))
     ax.set_title(title)
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel("Count")
-    ax.set_xticks(range(len(labels)))
-    ax.set_xticklabels(labels, rotation=45, ha="right")
-    _apply_dark_axes(fig, ax, grid_axis="y")
+
+    if horizontal:
+        y_positions = list(range(len(labels)))
+        ax.barh(y_positions, counts, color="#5fb0ff")
+        ax.set_yticks(y_positions)
+        ax.set_yticklabels(labels)
+        ax.invert_yaxis()
+        ax.set_xlabel("Count")
+        ax.set_ylabel(xlabel)
+    else:
+        ax.bar(range(len(labels)), counts, color="#5fb0ff")
+        ax.set_xlabel(xlabel)
+        ax.set_ylabel("Count")
+        ax.set_xticks(range(len(labels)))
+        ax.set_xticklabels(labels, rotation=45, ha="right")
+
+    _apply_dark_axes(fig, ax, grid_axis="x" if horizontal else "y")
     fig.tight_layout()
     fig.savefig(outfile, dpi=150, facecolor=fig.get_facecolor())
     plt.close(fig)
@@ -895,7 +916,6 @@ def main():
     if args.plots_dir:
         plots_dir = Path(args.plots_dir)
         ports_img = plot_bar(ports, plots_dir / "ufw_top_ports.jpg", "Top destination ports", "Port", args.top_ports)
-        ips_img = plot_bar(ips, plots_dir / "ufw_top_ips.jpg", "Top source IPs", "IP", args.top_ips)
         locations_img = (
             plot_bar(
                 location_counts,
@@ -903,6 +923,7 @@ def main():
                 "Top source countries/cities",
                 "Location",
                 args.top_ips,
+                horizontal=True,
             )
             if location_counts
             else None
@@ -911,7 +932,6 @@ def main():
         geo_img = plot_geo_bubbles(geo_points, plots_dir / "ufw_geo_map.jpg") if geo_points else None
         for label, img in [
             ("Top destination ports", ports_img),
-            ("Top source IPs", ips_img),
             ("Top source countries/cities", locations_img),
             ("Blocks per hour (UTC)", hourly_img),
             ("Block map", geo_img),
