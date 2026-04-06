@@ -5,10 +5,11 @@ Quick parser for UFW block logs.
 Reads /var/log/ufw.log (or another file) and summarizes:
 - total blocks, unique source IPs, destination ports
 - top destination ports
+- top protocols and TCP flag patterns
 - top source IPs (optionally with geolocation via ip-api.com)
 - top (source IP, destination port) pairs
 - simple heuristic hints for VPN/proxy/hosting when geolocation is enabled
-- hourly histogram
+- hourly histogram and top inbound interfaces
 """
 
 from __future__ import annotations
@@ -19,6 +20,7 @@ import datetime as dt
 import ipaddress
 import json
 import os
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
@@ -44,6 +46,24 @@ def parse_args() -> argparse.Namespace:
         type=int,
         default=10,
         help="Number of source IPs to show (default: 10)",
+    )
+    parser.add_argument(
+        "--top-protos",
+        type=int,
+        default=5,
+        help="Number of protocols to show (default: 5)",
+    )
+    parser.add_argument(
+        "--top-flags",
+        type=int,
+        default=10,
+        help="Number of TCP flag patterns to show (default: 10)",
+    )
+    parser.add_argument(
+        "--top-interfaces",
+        type=int,
+        default=5,
+        help="Number of inbound interfaces to show (default: 5)",
     )
     parser.add_argument(
         "--since-hours",
@@ -73,7 +93,7 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def parse_block_line(line: str) -> Optional[Dict[str, str]]:
+def parse_block_line(line: str) -> Optional[Dict[str, object]]:
     """Parse a UFW BLOCK log line into a dict."""
     if "[UFW BLOCK]" not in line:
         return None
@@ -86,19 +106,28 @@ def parse_block_line(line: str) -> Optional[Dict[str, str]]:
     except ValueError:
         timestamp = None
 
-    data: Dict[str, str] = {"timestamp": ts_raw}
+    data: Dict[str, object] = {"timestamp": ts_raw}
     if timestamp:
         data["iso_ts"] = timestamp.isoformat()
 
+    tcp_flags = []
+    known_flags = {"FIN", "SYN", "RST", "PSH", "ACK", "URG", "ECE", "CWR"}
     for token in parts:
         if "=" not in token:
             continue
         key, value = token.split("=", 1)
         data[key] = value
+    for token in parts:
+        if "=" in token:
+            continue
+        if token in known_flags:
+            tcp_flags.append(token)
+    if tcp_flags:
+        data["flags"] = tcp_flags
     return data
 
 
-def iter_blocks(path: Path, since: Optional[dt.datetime] = None) -> Iterable[Dict[str, str]]:
+def iter_blocks(path: Path, since: Optional[dt.datetime] = None) -> Iterable[Dict[str, object]]:
     with path.open("r", errors="ignore") as fh:
         for line in fh:
             block = parse_block_line(line)
@@ -288,6 +317,34 @@ def format_network_hint(info: GeoRecord, assessment: Optional[Dict[str, object]]
     return str(category)
 
 
+def load_ufw_deny_ips() -> set[str]:
+    commands = [
+        ["/usr/sbin/ufw", "status"],
+        ["sudo", "-n", "/usr/sbin/ufw", "status"],
+    ]
+    for cmd in commands:
+        try:
+            result = subprocess.run(cmd, check=True, capture_output=True, text=True)
+        except Exception:
+            continue
+        denies: set[str] = set()
+        for line in result.stdout.splitlines():
+            if "DENY" not in line:
+                continue
+            parts = line.split()
+            if not parts:
+                continue
+            ip = parts[0]
+            try:
+                ipaddress.ip_address(ip)
+            except ValueError:
+                continue
+            denies.add(ip)
+        if denies or result.stdout.strip():
+            return denies
+    return set()
+
+
 def geo_lookup(ip: str, cache: Dict[str, object]) -> GeoRecord:
     cached = cache.get(ip)
     if cached is not None:
@@ -349,20 +406,58 @@ def save_geo_cache(cache_path: Path, cache: Dict[str, str]) -> None:
         pass
 
 
-def summarize(blocks: Iterable[Dict[str, str]]):
+def _normalize_interface(value: Optional[object]) -> str:
+    iface = str(value or "").strip()
+    if iface:
+        return iface
+    return "unknown"
+
+
+def _normalize_protocol(value: Optional[object]) -> str:
+    proto = str(value or "").strip().upper()
+    return proto or "UNKNOWN"
+
+
+def _format_tcp_flags(flags: Iterable[str]) -> str:
+    order = ("SYN", "ACK", "FIN", "RST", "PSH", "URG", "ECE", "CWR")
+    uniq = {f for f in flags if f in order}
+    if not uniq:
+        return "none"
+    ordered = [f for f in order if f in uniq]
+    return "+".join(ordered)
+
+
+def summarize(blocks: Iterable[Dict[str, object]], deny_ips: Optional[set[str]] = None):
     ports = collections.Counter()
+    ports_blacklisted = collections.Counter()
+    ports_non_blacklisted = collections.Counter()
     ips = collections.Counter()
     pairs = collections.Counter()
     hourly = collections.Counter()
+    protocols = collections.Counter()
+    tcp_flags = collections.Counter()
+    interfaces = collections.Counter()
     total = 0
+    deny_ips = deny_ips or set()
 
     for b in blocks:
         total += 1
         dpt = b.get("DPT", "unknown")
         src = b.get("SRC", "unknown")
+        proto = _normalize_protocol(b.get("PROTO"))
+        iface = _normalize_interface(b.get("IN"))
         ports[dpt] += 1
+        if src in deny_ips:
+            ports_blacklisted[dpt] += 1
+        else:
+            ports_non_blacklisted[dpt] += 1
         ips[src] += 1
         pairs[(src, dpt)] += 1
+        protocols[proto] += 1
+        interfaces[iface] += 1
+        if proto == "TCP":
+            flags = _format_tcp_flags(b.get("flags", []))
+            tcp_flags[flags] += 1
         ts_str = b.get("timestamp")
         if ts_str:
             try:
@@ -371,7 +466,18 @@ def summarize(blocks: Iterable[Dict[str, str]]):
                 hourly[hour] += 1
             except ValueError:
                 pass
-    return total, ports, ips, pairs, hourly
+    return (
+        total,
+        ports,
+        ports_blacklisted,
+        ports_non_blacklisted,
+        ips,
+        pairs,
+        hourly,
+        protocols,
+        tcp_flags,
+        interfaces,
+    )
 
 
 def print_counter(counter: collections.Counter, title: str, limit: int, fmt=str):
@@ -698,6 +804,54 @@ def plot_bar(
     return outfile
 
 
+def plot_stacked_ports(
+    total: collections.Counter,
+    blacklisted: collections.Counter,
+    non_blacklisted: collections.Counter,
+    outfile: Path,
+    title: str,
+    xlabel: str,
+    limit: int = 10,
+):
+    if not total:
+        return None
+    plt = _get_plt()
+    items = total.most_common(limit)
+    labels = [str(i[0]) for i in items]
+    total_counts = [i[1] for i in items]
+    black_counts = [int(blacklisted.get(label, 0)) for label in labels]
+    non_black_counts = [int(non_blacklisted.get(label, 0)) for label in labels]
+
+    if not any(total_counts):
+        return None
+
+    outfile = Path(outfile)
+    outfile.parent.mkdir(parents=True, exist_ok=True)
+    fig, ax = plt.subplots(figsize=(9, 4))
+    ax.set_title(title)
+
+    x_positions = list(range(len(labels)))
+    ax.bar(x_positions, non_black_counts, color="#5fb0ff", label="Non-blacklisted")
+    ax.bar(
+        x_positions,
+        black_counts,
+        bottom=non_black_counts,
+        color="#fb7185",
+        label="Blacklisted",
+    )
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel("Count")
+    ax.set_xticks(x_positions)
+    ax.set_xticklabels(labels, rotation=45, ha="right")
+    ax.legend(facecolor="#0f172a", edgecolor="#334155", labelcolor="#e2e8f0")
+
+    _apply_dark_axes(fig, ax, grid_axis="y")
+    fig.tight_layout()
+    fig.savefig(outfile, dpi=150, facecolor=fig.get_facecolor())
+    plt.close(fig)
+    return outfile
+
+
 def plot_hourly(hourly: collections.Counter, outfile: Path):
     if not hourly:
         return None
@@ -868,7 +1022,19 @@ def main():
         since_dt = dt.datetime.now(dt.timezone.utc) - dt.timedelta(hours=args.since_hours)
 
     blocks = list(iter_blocks(log_path, since=since_dt))
-    total, ports, ips, pairs, hourly = summarize(blocks)
+    deny_ips = load_ufw_deny_ips()
+    (
+        total,
+        ports,
+        ports_blacklisted,
+        ports_non_blacklisted,
+        ips,
+        pairs,
+        hourly,
+        protocols,
+        tcp_flags,
+        interfaces,
+    ) = summarize(blocks, deny_ips)
     plot_paths = []
 
     print(f"Log file: {log_path}")
@@ -879,7 +1045,11 @@ def main():
     print(f"Unique destination ports: {len(ports)}")
 
     print_counter(ports, "Top destination ports", args.top_ports)
+    print_counter(protocols, "Top protocols", args.top_protos)
     print_counter(ips, "Top source IPs", args.top_ips)
+    if tcp_flags:
+        print_counter(tcp_flags, "Top TCP flag patterns", args.top_flags)
+    print_counter(interfaces, "Top inbound interfaces (IN)", args.top_interfaces)
     print_counter(pairs, "Top (source IP, destination port)", args.top_ips, fmt=lambda x: f"{x[0]} -> {x[1]}")
 
     print("\nBlocks per hour (UTC):")
@@ -915,7 +1085,15 @@ def main():
 
     if args.plots_dir:
         plots_dir = Path(args.plots_dir)
-        ports_img = plot_bar(ports, plots_dir / "ufw_top_ports.jpg", "Top destination ports", "Port", args.top_ports)
+        ports_img = plot_stacked_ports(
+            ports,
+            ports_blacklisted,
+            ports_non_blacklisted,
+            plots_dir / "ufw_top_ports.jpg",
+            "Top destination ports",
+            "Port",
+            args.top_ports,
+        )
         locations_img = (
             plot_bar(
                 location_counts,
@@ -956,8 +1134,18 @@ def main():
         md_lines.append("## Top destination ports")
         md_lines.append(md_table(ports, "Destination port", args.top_ports, fmt_item=lambda p: f"`{p}`"))
 
+        md_lines.append("## Top protocols")
+        md_lines.append(md_table(protocols, "Protocol", args.top_protos, fmt_item=lambda p: f"`{p}`"))
+
         md_lines.append("## Top source IPs")
         md_lines.append(md_table(ips, "Source IP", args.top_ips, fmt_item=lambda ip: f"`{ip}`"))
+
+        if tcp_flags:
+            md_lines.append("## Top TCP flag patterns")
+            md_lines.append(md_table(tcp_flags, "Flags", args.top_flags, fmt_item=lambda f: f"`{f}`"))
+
+        md_lines.append("## Top inbound interfaces (IN)")
+        md_lines.append(md_table(interfaces, "Interface", args.top_interfaces, fmt_item=lambda i: f"`{i}`"))
 
         md_lines.append("## Top source IP -> destination port")
         md_lines.append(
