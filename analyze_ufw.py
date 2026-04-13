@@ -439,7 +439,9 @@ def summarize(blocks: Iterable[Dict[str, object]], deny_ips: Optional[set[str]] 
     ports_non_blacklisted = collections.Counter()
     ips = collections.Counter()
     pairs = collections.Counter()
-    hourly = collections.Counter()
+    hourly_total = collections.Counter()
+    hourly_blacklisted = collections.Counter()
+    hourly_non_blacklisted = collections.Counter()
     protocols = collections.Counter()
     tcp_flags = collections.Counter()
     interfaces = collections.Counter()
@@ -452,8 +454,10 @@ def summarize(blocks: Iterable[Dict[str, object]], deny_ips: Optional[set[str]] 
         src = b.get("SRC", "unknown")
         proto = _normalize_protocol(b.get("PROTO"))
         iface = _normalize_interface(b.get("IN"))
+        is_blacklisted = src in deny_ips
+
         ports[dpt] += 1
-        if src in deny_ips:
+        if is_blacklisted:
             ports_blacklisted[dpt] += 1
         else:
             ports_non_blacklisted[dpt] += 1
@@ -469,7 +473,11 @@ def summarize(blocks: Iterable[Dict[str, object]], deny_ips: Optional[set[str]] 
             try:
                 ts = dt.datetime.fromisoformat(ts_str)
                 hour = ts.replace(minute=0, second=0, microsecond=0, tzinfo=None)
-                hourly[hour] += 1
+                hourly_total[hour] += 1
+                if is_blacklisted:
+                    hourly_blacklisted[hour] += 1
+                else:
+                    hourly_non_blacklisted[hour] += 1
             except ValueError:
                 pass
     return (
@@ -479,7 +487,9 @@ def summarize(blocks: Iterable[Dict[str, object]], deny_ips: Optional[set[str]] 
         ports_non_blacklisted,
         ips,
         pairs,
-        hourly,
+        hourly_total,
+        hourly_blacklisted,
+        hourly_non_blacklisted,
         protocols,
         tcp_flags,
         interfaces,
@@ -930,23 +940,34 @@ def plot_stacked_locations(
     return outfile
 
 
-def plot_hourly(hourly: collections.Counter, outfile: Path):
-    if not hourly:
+def plot_hourly(
+    hourly_total: collections.Counter,
+    hourly_blacklisted: collections.Counter,
+    hourly_non_blacklisted: collections.Counter,
+    outfile: Path,
+):
+    if not hourly_total:
         return None
     plt = _get_plt()
-    items = sorted(hourly.items())
-    labels = [h.strftime("%m-%d %Hh") for h, _ in items]
-    counts = [c for _, c in items]
+    all_hours = sorted(set(hourly_total) | set(hourly_blacklisted) | set(hourly_non_blacklisted))
+    labels = [h.strftime("%m-%d %Hh") for h in all_hours]
+    total_counts = [int(hourly_total.get(h, 0)) for h in all_hours]
+    black_counts = [int(hourly_blacklisted.get(h, 0)) for h in all_hours]
+    non_black_counts = [int(hourly_non_blacklisted.get(h, 0)) for h in all_hours]
     outfile = Path(outfile)
     outfile.parent.mkdir(parents=True, exist_ok=True)
 
     fig, ax = plt.subplots(figsize=(10, 4))
-    ax.plot(range(len(labels)), counts, marker="o", color="#d62728")
+    x = list(range(len(labels)))
+    ax.plot(x, total_counts, marker="o", color="#e2e8f0", linewidth=2.2, label="Total")
+    ax.plot(x, non_black_counts, marker="o", color="#5fb0ff", linewidth=1.8, label="Non-blacklisted")
+    ax.plot(x, black_counts, marker="o", color="#fb7185", linewidth=1.8, label="Blacklisted")
     ax.set_title("Blocks per hour (UTC)")
     ax.set_xlabel("Hour")
     ax.set_ylabel("Count")
-    ax.set_xticks(range(len(labels)))
+    ax.set_xticks(x)
     ax.set_xticklabels(labels, rotation=45, ha="right")
+    ax.legend(facecolor="#0f172a", edgecolor="#334155", labelcolor="#e2e8f0")
     _apply_dark_axes(fig, ax, grid_axis="y")
     fig.tight_layout()
     fig.savefig(outfile, dpi=150, facecolor=fig.get_facecolor())
@@ -1111,6 +1132,8 @@ def main():
         ips,
         pairs,
         hourly,
+        hourly_blacklisted,
+        hourly_non_blacklisted,
         protocols,
         tcp_flags,
         interfaces,
@@ -1191,7 +1214,12 @@ def main():
             if location_counts
             else None
         )
-        hourly_img = plot_hourly(hourly, plots_dir / "ufw_hourly.jpg")
+        hourly_img = plot_hourly(
+            hourly,
+            hourly_blacklisted,
+            hourly_non_blacklisted,
+            plots_dir / "ufw_hourly.jpg",
+        )
         geo_img = plot_geo_bubbles(geo_points, plots_dir / "ufw_geo_map.jpg") if geo_points else None
         for label, img in [
             ("Top destination ports", ports_img),
