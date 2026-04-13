@@ -546,27 +546,49 @@ def build_geo_rows(
     return rows
 
 
-def geo_location_counter(rows: List[Dict[str, object]]) -> collections.Counter:
-    counter: collections.Counter = collections.Counter()
+def _location_label_from_geo_row(row: Dict[str, object]) -> str:
+    info = _coerce_geo_record(row.get("info"))
+    city = str(info.get("city") or "").strip()
+    country = str(info.get("country") or "").strip()
+    if city and country:
+        return f"{city}, {country}"
+    if country:
+        return country
+    if city:
+        return city
+    return str(info.get("label") or row.get("ip") or "Unknown")
+
+
+def geo_location_counters(
+    rows: List[Dict[str, object]],
+    deny_ips: Optional[set[str]] = None,
+) -> Tuple[collections.Counter, collections.Counter, collections.Counter]:
+    total: collections.Counter = collections.Counter()
+    blacklisted: collections.Counter = collections.Counter()
+    non_blacklisted: collections.Counter = collections.Counter()
+    deny_ips = deny_ips or set()
+
     for row in rows:
-        info = _coerce_geo_record(row.get("info"))
-        city = str(info.get("city") or "").strip()
-        country = str(info.get("country") or "").strip()
-        if city and country:
-            label = f"{city}, {country}"
-        elif country:
-            label = country
-        elif city:
-            label = city
-        else:
-            label = str(info.get("label") or row.get("ip") or "Unknown")
+        label = _location_label_from_geo_row(row)
+        ip = str(row.get("ip") or "")
         try:
             count = int(row.get("count", 0))
         except (TypeError, ValueError):
             count = 0
-        if count:
-            counter[label] += count
-    return counter
+        if not count:
+            continue
+        total[label] += count
+        if ip in deny_ips:
+            blacklisted[label] += count
+        else:
+            non_blacklisted[label] += count
+
+    return total, blacklisted, non_blacklisted
+
+
+def geo_location_counter(rows: List[Dict[str, object]]) -> collections.Counter:
+    total, _, _ = geo_location_counters(rows, deny_ips=None)
+    return total
 
 
 def md_geo_table(rows: List[Dict[str, object]]) -> str:
@@ -858,6 +880,56 @@ def plot_stacked_ports(
     return outfile
 
 
+def plot_stacked_locations(
+    total: collections.Counter,
+    blacklisted: collections.Counter,
+    non_blacklisted: collections.Counter,
+    outfile: Path,
+    title: str,
+    xlabel: str,
+    limit: int = 10,
+):
+    if not total:
+        return None
+    plt = _get_plt()
+    items = total.most_common(limit)
+    labels = [str(i[0]) for i in items]
+    total_counts = [i[1] for i in items]
+    black_counts = [int(blacklisted.get(label, 0)) for label in labels]
+    non_black_counts = [int(non_blacklisted.get(label, 0)) for label in labels]
+
+    if not any(total_counts):
+        return None
+
+    outfile = Path(outfile)
+    outfile.parent.mkdir(parents=True, exist_ok=True)
+    fig_height = max(4.0, 0.6 * len(labels))
+    fig, ax = plt.subplots(figsize=(10, fig_height))
+    ax.set_title(title)
+
+    y_positions = list(range(len(labels)))
+    ax.barh(y_positions, non_black_counts, color="#5fb0ff", label="Non-blacklisted")
+    ax.barh(
+        y_positions,
+        black_counts,
+        left=non_black_counts,
+        color="#fb7185",
+        label="Blacklisted",
+    )
+    ax.set_xlabel("Count")
+    ax.set_ylabel(xlabel)
+    ax.set_yticks(y_positions)
+    ax.set_yticklabels(labels)
+    ax.invert_yaxis()
+    ax.legend(facecolor="#0f172a", edgecolor="#334155", labelcolor="#e2e8f0")
+
+    _apply_dark_axes(fig, ax, grid_axis="x")
+    fig.tight_layout()
+    fig.savefig(outfile, dpi=150, facecolor=fig.get_facecolor())
+    plt.close(fig)
+    return outfile
+
+
 def plot_hourly(hourly: collections.Counter, outfile: Path):
     if not hourly:
         return None
@@ -1022,6 +1094,8 @@ def main():
     suspicious_rows: List[Dict[str, object]] = []
     geo_points: List[Dict[str, object]] = []
     location_counts: collections.Counter = collections.Counter()
+    location_counts_blacklisted: collections.Counter = collections.Counter()
+    location_counts_non_blacklisted: collections.Counter = collections.Counter()
 
     since_dt = None
     if args.since_hours:
@@ -1065,7 +1139,11 @@ def main():
     if args.geo:
         print(f"\nGeolocation (max {args.geo_limit} IPs):")
         geo_rows = build_geo_rows(ips, geo_cache, args.geo_limit)
-        location_counts = geo_location_counter(geo_rows)
+        (
+            location_counts,
+            location_counts_blacklisted,
+            location_counts_non_blacklisted,
+        ) = geo_location_counters(geo_rows, deny_ips)
         suspicious_rows = [r for r in geo_rows if r.get("assessment", {}).get("suspicious")]
         for row in geo_rows:
             info = _coerce_geo_record(row.get("info"))
@@ -1101,13 +1179,14 @@ def main():
             args.top_ports,
         )
         locations_img = (
-            plot_bar(
+            plot_stacked_locations(
                 location_counts,
+                location_counts_blacklisted,
+                location_counts_non_blacklisted,
                 plots_dir / "ufw_top_locations.jpg",
                 "Top source countries/cities",
                 "Location",
                 args.top_ips,
-                horizontal=True,
             )
             if location_counts
             else None
