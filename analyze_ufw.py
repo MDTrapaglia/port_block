@@ -327,21 +327,27 @@ def load_ufw_deny_ips() -> set[str]:
             result = subprocess.run(cmd, check=True, capture_output=True, text=True)
         except Exception:
             continue
+
         denies: set[str] = set()
         for line in result.stdout.splitlines():
             if "DENY" not in line:
                 continue
-            parts = line.split()
-            if not parts:
-                continue
-            ip = parts[0]
-            try:
-                ipaddress.ip_address(ip)
-            except ValueError:
-                continue
-            denies.add(ip)
+
+            # UFW status can print either:
+            # - "Anywhere DENY <ip>"
+            # - "<ip> DENY Anywhere"
+            # so we scan every token and keep valid IP literals.
+            for token in line.split():
+                candidate = token.strip("()[],")
+                try:
+                    ipaddress.ip_address(candidate)
+                except ValueError:
+                    continue
+                denies.add(candidate)
+
         if denies or result.stdout.strip():
             return denies
+
     return set()
 
 
