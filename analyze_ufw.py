@@ -396,6 +396,96 @@ def geo_lookup(ip: str, cache: Dict[str, object]) -> GeoRecord:
     return cache[ip]  # type: ignore[return-value]
 
 
+def geo_lookup_batch(ips: Iterable[str], cache: Dict[str, object], batch_size: int = 100) -> None:
+    pending: List[str] = []
+    for raw_ip in ips:
+        ip = str(raw_ip or "").strip()
+        if not ip:
+            continue
+        if ip in cache:
+            continue
+        if is_private_ip(ip):
+            cache[ip] = {"label": "private", "lat": None, "lon": None}
+            continue
+        pending.append(ip)
+
+    if not pending:
+        return
+
+    endpoint = (
+        "http://ip-api.com/batch"
+        "?fields=status,country,regionName,city,org,isp,as,lat,lon,query"
+    )
+
+    for start in range(0, len(pending), batch_size):
+        chunk = pending[start : start + batch_size]
+        payload = [{"query": ip} for ip in chunk]
+        try:
+            req = Request(
+                endpoint,
+                data=json.dumps(payload).encode("utf-8"),
+                headers={
+                    "Content-Type": "application/json",
+                    "User-Agent": "Mozilla/5.0 ufw-geo-map",
+                },
+            )
+            with urlopen(req, timeout=8) as resp:
+                batch_data = json.load(resp)
+        except Exception:
+            for ip in chunk:
+                cache[ip] = {"label": "lookup_failed", "lat": None, "lon": None}
+            continue
+
+        if not isinstance(batch_data, list):
+            for ip in chunk:
+                cache[ip] = {"label": "lookup_failed", "lat": None, "lon": None}
+            continue
+
+        by_query = {}
+        for row in batch_data:
+            if not isinstance(row, dict):
+                continue
+            query = str(row.get("query") or "").strip()
+            if query:
+                by_query[query] = row
+
+        for ip in chunk:
+            row = by_query.get(ip)
+            if not row or row.get("status") != "success":
+                cache[ip] = {"label": "lookup_failed", "lat": None, "lon": None}
+                continue
+            parts = [
+                row.get("country"),
+                row.get("regionName"),
+                row.get("city"),
+                row.get("org") or row.get("isp"),
+            ]
+            cache[ip] = {
+                "label": " / ".join([p for p in parts if p]),
+                "lat": row.get("lat"),
+                "lon": row.get("lon"),
+                "country": row.get("country"),
+                "city": row.get("city"),
+                "org": row.get("org"),
+                "isp": row.get("isp"),
+                "asn": row.get("as"),
+            }
+
+
+def count_unique_locations_for_ips(ips: collections.Counter, cache: Dict[str, object]) -> int:
+    labels = set()
+    for ip in ips:
+        raw_info = cache.get(str(ip))
+        if raw_info is None:
+            continue
+        info = _coerce_geo_record(raw_info)
+        label = _location_label_from_geo_info(info, fallback="")
+        if not label or label in {"lookup_failed", "private"}:
+            continue
+        labels.add(label)
+    return len(labels)
+
+
 def load_geo_cache(cache_path: Path) -> Dict[str, object]:
     if cache_path.exists():
         try:
@@ -556,8 +646,7 @@ def build_geo_rows(
     return rows
 
 
-def _location_label_from_geo_row(row: Dict[str, object]) -> str:
-    info = _coerce_geo_record(row.get("info"))
+def _location_label_from_geo_info(info: GeoRecord, fallback: str = "Unknown") -> str:
     city = str(info.get("city") or "").strip()
     country = str(info.get("country") or "").strip()
     if city and country:
@@ -566,7 +655,15 @@ def _location_label_from_geo_row(row: Dict[str, object]) -> str:
         return country
     if city:
         return city
-    return str(info.get("label") or row.get("ip") or "Unknown")
+    label = str(info.get("label") or "").strip()
+    if label:
+        return label
+    return fallback
+
+
+def _location_label_from_geo_row(row: Dict[str, object]) -> str:
+    info = _coerce_geo_record(row.get("info"))
+    return _location_label_from_geo_info(info, fallback=str(row.get("ip") or "Unknown"))
 
 
 def geo_location_counters(
@@ -1117,6 +1214,7 @@ def main():
     location_counts: collections.Counter = collections.Counter()
     location_counts_blacklisted: collections.Counter = collections.Counter()
     location_counts_non_blacklisted: collections.Counter = collections.Counter()
+    unique_locations_24h = 0
 
     since_dt = None
     if args.since_hours:
@@ -1160,7 +1258,12 @@ def main():
         print(f"  {hour}:00  {count}")
 
     if args.geo:
+        geo_lookup_batch(ips.keys(), geo_cache)
+        unique_locations_24h = count_unique_locations_for_ips(ips, geo_cache)
+
         print(f"\nGeolocation (max {args.geo_limit} IPs):")
+        print(f"Unique countries/cities (24h): {unique_locations_24h}")
+
         geo_rows = build_geo_rows(ips, geo_cache, args.geo_limit)
         (
             location_counts,
@@ -1241,6 +1344,8 @@ def main():
             md_lines.append(f"- Window: last {args.since_hours} hours")
         md_lines.append(f"- Total blocks: {total}")
         md_lines.append(f"- Unique source IPs: {len(ips)}")
+        if args.geo:
+            md_lines.append(f"- Unique countries/cities (24h): {unique_locations_24h}")
         md_lines.append(f"- Unique destination ports: {len(ports)}")
         md_lines.append("")
 
