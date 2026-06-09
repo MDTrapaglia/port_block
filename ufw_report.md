@@ -2,166 +2,164 @@
 
 - Log: `/var/log/ufw.log`
 - Window: last 24.0 hours
-- Total blocks: 4335
-- Unique source IPs: 2547
-- Unique countries/cities (24h): 398
-- Unique destination ports: 2332
+- Total blocks: 4354
+- Unique source IPs: 2611
+- Unique countries/cities (24h): 377
+- Unique destination ports: 2600
 
 ## Top destination ports
 | # | Destination port | Count | % |
 | ---: | --- | ---: | ---: |
-| 1 | `23` | 123 | 2.8% |
-| 2 | `27015` | 87 | 2.0% |
-| 3 | `22` | 61 | 1.4% |
-| 4 | `8080` | 55 | 1.3% |
-| 5 | `3389` | 39 | 0.9% |
-| 6 | `53` | 36 | 0.8% |
-| 7 | `8081` | 30 | 0.7% |
-| 8 | `5900` | 29 | 0.7% |
-| 9 | `8443` | 29 | 0.7% |
-| 10 | `5060` | 29 | 0.7% |
-| 11 | `1433` | 26 | 0.6% |
-| 12 | `81` | 25 | 0.6% |
-| 13 | `88` | 24 | 0.6% |
-| 14 | `3306` | 24 | 0.6% |
-| 15 | `2222` | 22 | 0.5% |
+| 1 | `23` | 115 | 2.6% |
+| 2 | `27015` | 70 | 1.6% |
+| 3 | `8080` | 57 | 1.3% |
+| 4 | `22` | 43 | 1.0% |
+| 5 | `3389` | 38 | 0.9% |
+| 6 | `5060` | 34 | 0.8% |
+| 7 | `8081` | 31 | 0.7% |
+| 8 | `8443` | 27 | 0.6% |
+| 9 | `3306` | 21 | 0.5% |
+| 10 | `53` | 19 | 0.4% |
+| 11 | `2222` | 19 | 0.4% |
+| 12 | `1433` | 19 | 0.4% |
+| 13 | `161` | 18 | 0.4% |
+| 14 | `9200` | 17 | 0.4% |
+| 15 | `21` | 17 | 0.4% |
 
 ## Top protocols
 | # | Protocol | Count | % |
 | ---: | --- | ---: | ---: |
-| 1 | `TCP` | 3616 | 83.4% |
-| 2 | `UDP` | 708 | 16.3% |
-| 3 | `47` | 10 | 0.2% |
-| 4 | `41` | 1 | 0.0% |
+| 1 | `TCP` | 3752 | 86.2% |
+| 2 | `UDP` | 599 | 13.8% |
+| 3 | `47` | 3 | 0.1% |
 
 ## Top source IPs
 | # | Source IP | Count | % |
 | ---: | --- | ---: | ---: |
-| 1 | `216.180.246.249` | 38 | 0.9% |
-| 2 | `31.59.160.12` | 34 | 0.8% |
-| 3 | `49.163.99.53` | 32 | 0.7% |
-| 4 | `82.147.85.62` | 23 | 0.5% |
-| 5 | `72.167.38.71` | 20 | 0.5% |
-| 6 | `176.65.139.130` | 19 | 0.4% |
-| 7 | `17.57.144.155` | 18 | 0.4% |
-| 8 | `103.82.195.145` | 16 | 0.4% |
-| 9 | `192.241.179.233` | 14 | 0.3% |
-| 10 | `3.131.24.55` | 14 | 0.3% |
-| 11 | `18.119.209.50` | 14 | 0.3% |
-| 12 | `18.189.74.1` | 14 | 0.3% |
-| 13 | `18.217.208.51` | 14 | 0.3% |
-| 14 | `51.159.110.167` | 14 | 0.3% |
-| 15 | `204.76.203.15` | 13 | 0.3% |
+| 1 | `176.65.139.55` | 60 | 1.4% |
+| 2 | `101.36.129.185` | 51 | 1.2% |
+| 3 | `64.89.160.119` | 47 | 1.1% |
+| 4 | `176.65.139.130` | 29 | 0.7% |
+| 5 | `112.140.184.197` | 19 | 0.4% |
+| 6 | `192.241.179.233` | 16 | 0.4% |
+| 7 | `18.119.209.50` | 15 | 0.3% |
+| 8 | `5.187.35.142` | 15 | 0.3% |
+| 9 | `204.76.203.15` | 15 | 0.3% |
+| 10 | `44.215.219.236` | 14 | 0.3% |
+| 11 | `2.22.149.137` | 13 | 0.3% |
+| 12 | `151.243.11.37` | 12 | 0.3% |
+| 13 | `3.131.24.55` | 12 | 0.3% |
+| 14 | `18.190.15.50` | 12 | 0.3% |
+| 15 | `159.223.169.110` | 12 | 0.3% |
 
 ## Top TCP flag patterns
 | # | Flags | Count | % |
 | ---: | --- | ---: | ---: |
-| 1 | `SYN` | 3489 | 96.5% |
-| 2 | `ACK+PSH` | 56 | 1.5% |
-| 3 | `ACK+FIN+PSH` | 30 | 0.8% |
-| 4 | `ACK` | 27 | 0.7% |
-| 5 | `ACK+FIN` | 8 | 0.2% |
-| 6 | `SYN+ECE+CWR` | 6 | 0.2% |
+| 1 | `SYN` | 3654 | 97.4% |
+| 2 | `ACK+FIN+PSH` | 42 | 1.1% |
+| 3 | `ACK+PSH` | 38 | 1.0% |
+| 4 | `ACK` | 9 | 0.2% |
+| 5 | `SYN+ECE+CWR` | 5 | 0.1% |
+| 6 | `ACK+FIN` | 4 | 0.1% |
 
 ## Top inbound interfaces (IN)
 | # | Interface | Count | % |
 | ---: | --- | ---: | ---: |
-| 1 | `eth0` | 4333 | 100.0% |
-| 2 | `wlan0` | 2 | 0.0% |
+| 1 | `eth0` | 4354 | 100.0% |
 
 ## Top source IP -> destination port
 | # | Source IP -> port | Count | % |
 | ---: | --- | ---: | ---: |
-| 1 | `72.167.38.71` -> `23` | 20 | 0.5% |
-| 2 | `192.241.179.233` -> `23` | 14 | 0.3% |
-| 3 | `69.17.52.1` -> `8333` | 11 | 0.3% |
-| 4 | `45.198.224.18` -> `8728` | 9 | 0.2% |
-| 5 | `178.128.147.121` -> `23` | 7 | 0.2% |
-| 6 | `178.20.210.152` -> `1723` | 7 | 0.2% |
-| 7 | `216.180.246.249` -> `22` | 7 | 0.2% |
-| 8 | `216.180.246.249` -> `81` | 7 | 0.2% |
-| 9 | `31.59.160.12` -> `82` | 6 | 0.1% |
-| 10 | `31.59.160.12` -> `88` | 6 | 0.1% |
-| 11 | `31.59.160.12` -> `8081` | 6 | 0.1% |
-| 12 | `31.59.160.12` -> `83` | 6 | 0.1% |
-| 13 | `176.65.139.151` -> `23` | 6 | 0.1% |
-| 14 | `124.198.131.39` -> `3000` | 6 | 0.1% |
-| 15 | `216.180.246.25` -> `53` | 6 | 0.1% |
+| 1 | `112.140.184.197` -> `23` | 19 | 0.4% |
+| 2 | `192.241.179.233` -> `23` | 16 | 0.4% |
+| 3 | `104.238.81.133` -> `23` | 10 | 0.2% |
+| 4 | `69.17.52.1` -> `8333` | 7 | 0.2% |
+| 5 | `178.20.210.152` -> `1723` | 7 | 0.2% |
+| 6 | `124.198.131.39` -> `3000` | 6 | 0.1% |
+| 7 | `45.205.1.68` -> `2011` | 5 | 0.1% |
+| 8 | `45.198.224.18` -> `8728` | 5 | 0.1% |
+| 9 | `130.12.180.174` -> `23` | 5 | 0.1% |
+| 10 | `2.23.164.216` -> `64588` | 5 | 0.1% |
+| 11 | `66.132.195.77` -> `25` | 5 | 0.1% |
+| 12 | `66.132.195.62` -> `8080` | 5 | 0.1% |
+| 13 | `162.159.128.233` -> `50012` | 5 | 0.1% |
+| 14 | `2.22.149.137` -> `52790` | 5 | 0.1% |
+| 15 | `51.159.110.167` -> `25564` | 4 | 0.1% |
 
 ## Blocks per hour (UTC)
 | Hour (UTC) | Count | % |
 | :--- | ---: | ---: |
-| 2026-06-07 04:00:00:00 | 133 | 3.1% |
-| 2026-06-07 05:00:00:00 | 180 | 4.2% |
-| 2026-06-07 06:00:00:00 | 180 | 4.2% |
-| 2026-06-07 07:00:00:00 | 180 | 4.2% |
-| 2026-06-07 08:00:00:00 | 181 | 4.2% |
-| 2026-06-07 09:00:00:00 | 182 | 4.2% |
-| 2026-06-07 10:00:00:00 | 181 | 4.2% |
-| 2026-06-07 11:00:00:00 | 179 | 4.1% |
-| 2026-06-07 12:00:00:00 | 175 | 4.0% |
-| 2026-06-07 13:00:00:00 | 183 | 4.2% |
-| 2026-06-07 14:00:00:00 | 172 | 4.0% |
-| 2026-06-07 15:00:00:00 | 177 | 4.1% |
-| 2026-06-07 16:00:00:00 | 193 | 4.5% |
-| 2026-06-07 17:00:00:00 | 179 | 4.1% |
-| 2026-06-07 18:00:00:00 | 179 | 4.1% |
-| 2026-06-07 19:00:00:00 | 181 | 4.2% |
-| 2026-06-07 20:00:00:00 | 179 | 4.1% |
-| 2026-06-07 21:00:00:00 | 181 | 4.2% |
-| 2026-06-07 22:00:00:00 | 192 | 4.4% |
-| 2026-06-07 23:00:00:00 | 179 | 4.1% |
-| 2026-06-08 00:00:00:00 | 181 | 4.2% |
-| 2026-06-08 01:00:00:00 | 178 | 4.1% |
-| 2026-06-08 02:00:00:00 | 184 | 4.2% |
-| 2026-06-08 03:00:00:00 | 177 | 4.1% |
-| 2026-06-08 04:00:00:00 | 49 | 1.1% |
+| 2026-06-08 04:00:00:00 | 133 | 3.1% |
+| 2026-06-08 05:00:00:00 | 180 | 4.1% |
+| 2026-06-08 06:00:00:00 | 181 | 4.2% |
+| 2026-06-08 07:00:00:00 | 178 | 4.1% |
+| 2026-06-08 08:00:00:00 | 167 | 3.8% |
+| 2026-06-08 09:00:00:00 | 180 | 4.1% |
+| 2026-06-08 10:00:00:00 | 181 | 4.2% |
+| 2026-06-08 11:00:00:00 | 188 | 4.3% |
+| 2026-06-08 12:00:00:00 | 180 | 4.1% |
+| 2026-06-08 13:00:00:00 | 180 | 4.1% |
+| 2026-06-08 14:00:00:00 | 181 | 4.2% |
+| 2026-06-08 15:00:00:00 | 179 | 4.1% |
+| 2026-06-08 16:00:00:00 | 180 | 4.1% |
+| 2026-06-08 17:00:00:00 | 181 | 4.2% |
+| 2026-06-08 18:00:00:00 | 180 | 4.1% |
+| 2026-06-08 19:00:00:00 | 178 | 4.1% |
+| 2026-06-08 20:00:00:00 | 181 | 4.2% |
+| 2026-06-08 21:00:00:00 | 180 | 4.1% |
+| 2026-06-08 22:00:00:00 | 181 | 4.2% |
+| 2026-06-08 23:00:00:00 | 179 | 4.1% |
+| 2026-06-09 00:00:00:00 | 185 | 4.2% |
+| 2026-06-09 01:00:00:00 | 194 | 4.5% |
+| 2026-06-09 02:00:00:00 | 195 | 4.5% |
+| 2026-06-09 03:00:00:00 | 187 | 4.3% |
+| 2026-06-09 04:00:00:00 | 45 | 1.0% |
 
 ## Top source countries/cities
 | # | Location | Count | % |
 | ---: | --- | ---: | ---: |
-| 1 | Dublin, United States | 56 | 18.9% |
-| 2 | Massy, France | 38 | 12.8% |
-| 3 | Abu Dhabi, United Arab Emirates | 34 | 11.4% |
-| 4 | Gangseo-gu, South Korea | 32 | 10.8% |
-| 5 | Novosibirsk, Russia | 23 | 7.7% |
-| 6 | Tempe, United States | 20 | 6.7% |
-| 7 | Eygelshoven, The Netherlands | 19 | 6.4% |
-| 8 | Cupertino, United States | 18 | 6.1% |
-| 9 | Thanh Khê, Vietnam | 16 | 5.4% |
-| 10 | Secaucus, United States | 14 | 4.7% |
-| 11 | Paris, France | 14 | 4.7% |
-| 12 | Eygelshoven, Netherlands | 13 | 4.4% |
+| 1 | Eygelshoven, The Netherlands | 89 | 26.0% |
+| 2 | Shenzhen City Centre, China | 51 | 14.9% |
+| 3 | Schieren, Luxembourg | 47 | 13.7% |
+| 4 | Dublin, United States | 39 | 11.4% |
+| 5 | Singapore, Singapore | 19 | 5.6% |
+| 6 | Secaucus, United States | 16 | 4.7% |
+| 7 | Amsterdam, The Netherlands | 15 | 4.4% |
+| 8 | Eygelshoven, Netherlands | 15 | 4.4% |
+| 9 | Ashburn, United States | 14 | 4.1% |
+| 10 | Buenos Aires, Argentina | 13 | 3.8% |
+| 11 | Frankfurt am Main, Germany | 12 | 3.5% |
+| 12 | North Bergen, United States | 12 | 3.5% |
 
 ## Geolocation (max 15 IPs)
 | # | Source IP | Count | % | Location | Network / hint |
 | ---: | --- | ---: | ---: | --- | --- |
-| 1 | `216.180.246.249` | 38 | 12.8% | France / Île-de-France / Massy / Internet Utilities NA LLC | Hosting/Cloud (google llc) |
-| 2 | `31.59.160.12` | 34 | 11.4% | United Arab Emirates / Abu Dhabi / Abu Dhabi / GoldIPv4 | No apparent signal |
-| 3 | `49.163.99.53` | 32 | 10.8% | South Korea / Seoul / Gangseo-gu / LG POWERCOMM | No apparent signal |
-| 4 | `82.147.85.62` | 23 | 7.7% | Russia / Novosibirsk Oblast / Novosibirsk / Nerushenko Vyacheslav Nikolaevich | No apparent signal |
-| 5 | `72.167.38.71` | 20 | 6.7% | United States / Arizona / Tempe / GoDaddy.com, LLC | No apparent signal |
-| 6 | `176.65.139.130` | 19 | 6.4% | The Netherlands / Limburg / Eygelshoven / Storm Industries | No apparent signal |
-| 7 | `17.57.144.155` | 18 | 6.1% | United States / California / Cupertino / Apple Inc | No apparent signal |
-| 8 | `103.82.195.145` | 16 | 5.4% | Vietnam / Da Nang City / Thanh Khê / Cloudfly Corporation | No apparent signal |
-| 9 | `192.241.179.233` | 14 | 4.7% | United States / New Jersey / Secaucus / Digital Ocean | Hosting/Cloud (digitalocean) |
-| 10 | `3.131.24.55` | 14 | 4.7% | United States / Ohio / Dublin / AWS EC2 (us-east-2) | Hosting/Cloud (aws) |
-| 11 | `18.119.209.50` | 14 | 4.7% | United States / Ohio / Dublin / AWS EC2 (us-east-2) | Hosting/Cloud (aws) |
-| 12 | `18.189.74.1` | 14 | 4.7% | United States / Ohio / Dublin / AWS EC2 (us-east-2) | Hosting/Cloud (aws) |
-| 13 | `18.217.208.51` | 14 | 4.7% | United States / Ohio / Dublin / AWS EC2 (us-east-2) | Hosting/Cloud (aws) |
-| 14 | `51.159.110.167` | 14 | 4.7% | France / Île-de-France / Paris / ONLINE | Hosting/Cloud (scaleway) |
-| 15 | `204.76.203.15` | 13 | 4.4% | Netherlands / Limburg / Eygelshoven / Intelligence Hosting LLC | No apparent signal |
+| 1 | `176.65.139.55` | 60 | 17.5% | The Netherlands / Limburg / Eygelshoven / Storm Industries | No apparent signal |
+| 2 | `101.36.129.185` | 51 | 14.9% | China / Guangdong / Shenzhen City Centre / Beijing Zhonglianlixin Technology Co., Ltd. | Mobile/CGNAT (mobile) |
+| 3 | `64.89.160.119` | 47 | 13.7% | Luxembourg / Diekirch / Schieren / Ghosty Networks LLC | No apparent signal |
+| 4 | `176.65.139.130` | 29 | 8.5% | The Netherlands / Limburg / Eygelshoven / Storm Industries | No apparent signal |
+| 5 | `112.140.184.197` | 19 | 5.6% | Singapore / Central Singapore / Singapore / Sparkstation | No apparent signal |
+| 6 | `192.241.179.233` | 16 | 4.7% | United States / New Jersey / Secaucus / Digital Ocean | Hosting/Cloud (digitalocean) |
+| 7 | `18.119.209.50` | 15 | 4.4% | United States / Ohio / Dublin / AWS EC2 (us-east-2) | Hosting/Cloud (aws) |
+| 8 | `5.187.35.142` | 15 | 4.4% | The Netherlands / North Holland / Amsterdam / Amarutu Technology Ltd | No apparent signal |
+| 9 | `204.76.203.15` | 15 | 4.4% | Netherlands / Limburg / Eygelshoven / Intelligence Hosting LLC | No apparent signal |
+| 10 | `44.215.219.236` | 14 | 4.1% | United States / Virginia / Ashburn / AWS EC2 (us-east-1) | Hosting/Cloud (aws) |
+| 11 | `2.22.149.137` | 13 | 3.8% | Argentina / Buenos Aires F.D. / Buenos Aires / Akamai Technologies | CDN/Edge (akamai) |
+| 12 | `151.243.11.37` | 12 | 3.5% | Germany / Hesse / Frankfurt am Main / Private Customer | No apparent signal |
+| 13 | `3.131.24.55` | 12 | 3.5% | United States / Ohio / Dublin / AWS EC2 (us-east-2) | Hosting/Cloud (aws) |
+| 14 | `18.190.15.50` | 12 | 3.5% | United States / Ohio / Dublin / AWS EC2 (us-east-2) | Hosting/Cloud (aws) |
+| 15 | `159.223.169.110` | 12 | 3.5% | United States / New Jersey / North Bergen / DigitalOcean, LLC | Hosting/Cloud (digitalocean) |
 
 ## VPN/Proxy/Hosting suspicion (heuristic)
 | # | Source IP | Count | % | Suspicion | Location |
 | ---: | --- | ---: | ---: | --- | --- |
-| 1 | `216.180.246.249` | 38 | 31.1% | Hosting/Cloud (google llc) | France / Île-de-France / Massy / Internet Utilities NA LLC |
-| 2 | `192.241.179.233` | 14 | 11.5% | Hosting/Cloud (digitalocean) | United States / New Jersey / Secaucus / Digital Ocean |
-| 3 | `3.131.24.55` | 14 | 11.5% | Hosting/Cloud (aws) | United States / Ohio / Dublin / AWS EC2 (us-east-2) |
-| 4 | `18.119.209.50` | 14 | 11.5% | Hosting/Cloud (aws) | United States / Ohio / Dublin / AWS EC2 (us-east-2) |
-| 5 | `18.189.74.1` | 14 | 11.5% | Hosting/Cloud (aws) | United States / Ohio / Dublin / AWS EC2 (us-east-2) |
-| 6 | `18.217.208.51` | 14 | 11.5% | Hosting/Cloud (aws) | United States / Ohio / Dublin / AWS EC2 (us-east-2) |
-| 7 | `51.159.110.167` | 14 | 11.5% | Hosting/Cloud (scaleway) | France / Île-de-France / Paris / ONLINE |
+| 1 | `192.241.179.233` | 16 | 17.0% | Hosting/Cloud (digitalocean) | United States / New Jersey / Secaucus / Digital Ocean |
+| 2 | `18.119.209.50` | 15 | 16.0% | Hosting/Cloud (aws) | United States / Ohio / Dublin / AWS EC2 (us-east-2) |
+| 3 | `44.215.219.236` | 14 | 14.9% | Hosting/Cloud (aws) | United States / Virginia / Ashburn / AWS EC2 (us-east-1) |
+| 4 | `2.22.149.137` | 13 | 13.8% | CDN/Edge (akamai) | Argentina / Buenos Aires F.D. / Buenos Aires / Akamai Technologies |
+| 5 | `3.131.24.55` | 12 | 12.8% | Hosting/Cloud (aws) | United States / Ohio / Dublin / AWS EC2 (us-east-2) |
+| 6 | `18.190.15.50` | 12 | 12.8% | Hosting/Cloud (aws) | United States / Ohio / Dublin / AWS EC2 (us-east-2) |
+| 7 | `159.223.169.110` | 12 | 12.8% | Hosting/Cloud (digitalocean) | United States / New Jersey / North Bergen / DigitalOcean, LLC |
 
 ## Charts
 ![Top destination ports](ufw_plots/ufw_top_ports.jpg)
