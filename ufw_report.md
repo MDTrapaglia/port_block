@@ -2,137 +2,157 @@
 
 - Log: `/var/log/ufw.log`
 - Window: last 24.0 hours
-- Total blocks: 669
-- Unique source IPs: 575
-- Unique countries/cities (24h): 141
-- Unique destination ports: 494
+- Total blocks: 4331
+- Unique source IPs: 2822
+- Unique countries/cities (24h): 458
+- Unique destination ports: 2571
 
 ## Top destination ports
 | # | Destination port | Count | % |
 | ---: | --- | ---: | ---: |
-| 1 | `23` | 45 | 6.7% |
-| 2 | `22` | 19 | 2.8% |
-| 3 | `5555` | 8 | 1.2% |
-| 4 | `10661` | 8 | 1.2% |
-| 5 | `5060` | 6 | 0.9% |
-| 6 | `unknown` | 6 | 0.9% |
-| 7 | `49291` | 6 | 0.9% |
-| 8 | `8080` | 5 | 0.7% |
-| 9 | `27017` | 5 | 0.7% |
-| 10 | `123` | 4 | 0.6% |
-| 11 | `1080` | 4 | 0.6% |
-| 12 | `3306` | 4 | 0.6% |
-| 13 | `1434` | 4 | 0.6% |
-| 14 | `993` | 4 | 0.6% |
-| 15 | `88` | 4 | 0.6% |
+| 1 | `23` | 259 | 6.0% |
+| 2 | `22` | 116 | 2.7% |
+| 3 | `5060` | 41 | 0.9% |
+| 4 | `5555` | 40 | 0.9% |
+| 5 | `8080` | 32 | 0.7% |
+| 6 | `8443` | 30 | 0.7% |
+| 7 | `unknown` | 30 | 0.7% |
+| 8 | `53` | 26 | 0.6% |
+| 9 | `123` | 25 | 0.6% |
+| 10 | `3306` | 22 | 0.5% |
+| 11 | `1433` | 21 | 0.5% |
+| 12 | `2222` | 20 | 0.5% |
+| 13 | `25` | 15 | 0.3% |
+| 14 | `1900` | 14 | 0.3% |
+| 15 | `8888` | 14 | 0.3% |
 
 ## Top protocols
 | # | Protocol | Count | % |
 | ---: | --- | ---: | ---: |
-| 1 | `TCP` | 582 | 87.0% |
-| 2 | `UDP` | 81 | 12.1% |
-| 3 | `47` | 6 | 0.9% |
+| 1 | `TCP` | 3764 | 86.9% |
+| 2 | `UDP` | 537 | 12.4% |
+| 3 | `47` | 27 | 0.6% |
+| 4 | `4` | 2 | 0.0% |
+| 5 | `41` | 1 | 0.0% |
 
 ## Top source IPs
 | # | Source IP | Count | % |
 | ---: | --- | ---: | ---: |
-| 1 | `81.110.171.250` | 9 | 1.3% |
-| 2 | `54.203.147.253` | 8 | 1.2% |
-| 3 | `38.51.144.232` | 6 | 0.9% |
-| 4 | `192.248.150.180` | 4 | 0.6% |
-| 5 | `85.217.140.33` | 4 | 0.6% |
-| 6 | `193.163.125.205` | 3 | 0.4% |
-| 7 | `185.73.23.133` | 3 | 0.4% |
-| 8 | `3.131.24.55` | 3 | 0.4% |
-| 9 | `204.76.203.4` | 3 | 0.4% |
-| 10 | `177.128.174.242` | 3 | 0.4% |
-| 11 | `85.217.140.35` | 3 | 0.4% |
-| 12 | `85.217.140.30` | 3 | 0.4% |
-| 13 | `66.69.123.191` | 3 | 0.4% |
-| 14 | `168.196.246.184` | 3 | 0.4% |
-| 15 | `85.217.140.29` | 3 | 0.4% |
+| 1 | `204.76.203.4` | 19 | 0.4% |
+| 2 | `18.119.209.50` | 15 | 0.3% |
+| 3 | `85.217.140.27` | 14 | 0.3% |
+| 4 | `85.217.140.35` | 14 | 0.3% |
+| 5 | `151.243.11.240` | 14 | 0.3% |
+| 6 | `172.110.223.179` | 14 | 0.3% |
+| 7 | `18.190.15.50` | 13 | 0.3% |
+| 8 | `85.217.140.33` | 13 | 0.3% |
+| 9 | `77.239.124.127` | 13 | 0.3% |
+| 10 | `45.194.67.120` | 12 | 0.3% |
+| 11 | `85.217.140.30` | 12 | 0.3% |
+| 12 | `18.221.179.104` | 11 | 0.3% |
+| 13 | `85.217.140.28` | 11 | 0.3% |
+| 14 | `85.217.140.20` | 11 | 0.3% |
+| 15 | `85.217.140.29` | 11 | 0.3% |
 
 ## Top TCP flag patterns
 | # | Flags | Count | % |
 | ---: | --- | ---: | ---: |
-| 1 | `SYN` | 563 | 96.7% |
-| 2 | `ACK+PSH` | 17 | 2.9% |
-| 3 | `SYN+ECE+CWR` | 2 | 0.3% |
+| 1 | `SYN` | 3733 | 99.2% |
+| 2 | `SYN+ECE+CWR` | 14 | 0.4% |
+| 3 | `ACK+FIN+PSH` | 9 | 0.2% |
+| 4 | `ACK+PSH` | 5 | 0.1% |
+| 5 | `ACK+FIN` | 2 | 0.1% |
+| 6 | `ACK` | 1 | 0.0% |
 
 ## Top inbound interfaces (IN)
 | # | Interface | Count | % |
 | ---: | --- | ---: | ---: |
-| 1 | `eth0` | 669 | 100.0% |
+| 1 | `eth0` | 4331 | 100.0% |
 
 ## Top source IP -> destination port
 | # | Source IP -> port | Count | % |
 | ---: | --- | ---: | ---: |
-| 1 | `81.110.171.250` -> `23` | 9 | 1.3% |
-| 2 | `54.203.147.253` -> `10661` | 8 | 1.2% |
-| 3 | `38.51.144.232` -> `49291` | 6 | 0.9% |
-| 4 | `66.132.195.85` -> `1194` | 2 | 0.3% |
-| 5 | `102.38.103.239` -> `22` | 2 | 0.3% |
-| 6 | `204.76.203.4` -> `25565` | 2 | 0.3% |
-| 7 | `207.175.206.140` -> `27017` | 2 | 0.3% |
-| 8 | `177.128.174.242` -> `23` | 2 | 0.3% |
-| 9 | `66.69.123.191` -> `22` | 2 | 0.3% |
-| 10 | `168.196.246.184` -> `23` | 2 | 0.3% |
-| 11 | `181.78.94.156` -> `22` | 2 | 0.3% |
-| 12 | `34.38.31.171` -> `22` | 2 | 0.3% |
-| 13 | `178.20.210.151` -> `22` | 2 | 0.3% |
-| 14 | `178.20.210.152` -> `1723` | 2 | 0.3% |
-| 15 | `34.79.151.68` -> `110` | 2 | 0.3% |
+| 1 | `172.110.223.179` -> `5060` | 14 | 0.3% |
+| 2 | `204.76.203.4` -> `25566` | 8 | 0.2% |
+| 3 | `94.154.43.64` -> `123` | 8 | 0.2% |
+| 4 | `204.76.203.4` -> `25564` | 7 | 0.2% |
+| 5 | `77.239.124.127` -> `23` | 5 | 0.1% |
+| 6 | `152.53.148.66` -> `9001` | 5 | 0.1% |
+| 7 | `178.20.210.152` -> `1723` | 5 | 0.1% |
+| 8 | `77.239.124.127` -> `2323` | 5 | 0.1% |
+| 9 | `151.101.219.10` -> `44172` | 5 | 0.1% |
+| 10 | `66.132.195.107` -> `53` | 5 | 0.1% |
+| 11 | `139.19.117.130` -> `22` | 4 | 0.1% |
+| 12 | `204.76.203.4` -> `25565` | 4 | 0.1% |
+| 13 | `172.64.155.231` -> `53508` | 4 | 0.1% |
+| 14 | `180.93.250.126` -> `5938` | 4 | 0.1% |
+| 15 | `69.17.52.1` -> `8333` | 4 | 0.1% |
 
 ## Blocks per hour (UTC)
 | Hour (UTC) | Count | % |
 | :--- | ---: | ---: |
-| 2026-08-30 00:00:00:00 | 80 | 12.0% |
-| 2026-08-30 01:00:00:00 | 182 | 27.2% |
-| 2026-08-30 02:00:00:00 | 180 | 26.9% |
-| 2026-08-30 03:00:00:00 | 175 | 26.2% |
-| 2026-08-30 04:00:00:00 | 51 | 7.6% |
+| 2026-08-30 04:00:00:00 | 133 | 3.1% |
+| 2026-08-30 05:00:00:00 | 181 | 4.2% |
+| 2026-08-30 06:00:00:00 | 179 | 4.1% |
+| 2026-08-30 07:00:00:00 | 181 | 4.2% |
+| 2026-08-30 08:00:00:00 | 180 | 4.2% |
+| 2026-08-30 09:00:00:00 | 191 | 4.4% |
+| 2026-08-30 10:00:00:00 | 180 | 4.2% |
+| 2026-08-30 11:00:00:00 | 177 | 4.1% |
+| 2026-08-30 12:00:00:00 | 183 | 4.2% |
+| 2026-08-30 13:00:00:00 | 179 | 4.1% |
+| 2026-08-30 14:00:00:00 | 181 | 4.2% |
+| 2026-08-30 15:00:00:00 | 180 | 4.2% |
+| 2026-08-30 16:00:00:00 | 178 | 4.1% |
+| 2026-08-30 17:00:00:00 | 181 | 4.2% |
+| 2026-08-30 18:00:00:00 | 179 | 4.1% |
+| 2026-08-30 19:00:00:00 | 181 | 4.2% |
+| 2026-08-30 20:00:00:00 | 181 | 4.2% |
+| 2026-08-30 21:00:00:00 | 181 | 4.2% |
+| 2026-08-30 22:00:00:00 | 178 | 4.1% |
+| 2026-08-30 23:00:00:00 | 181 | 4.2% |
+| 2026-08-31 00:00:00:00 | 181 | 4.2% |
+| 2026-08-31 01:00:00:00 | 180 | 4.2% |
+| 2026-08-31 02:00:00:00 | 180 | 4.2% |
+| 2026-08-31 03:00:00:00 | 180 | 4.2% |
+| 2026-08-31 04:00:00:00 | 44 | 1.0% |
 
 ## Top source countries/cities
 | # | Location | Count | % |
 | ---: | --- | ---: | ---: |
-| 1 | Gravelines, France | 13 | 21.3% |
-| 2 | Manchester, United Kingdom | 9 | 14.8% |
-| 3 | Portland, United States | 8 | 13.1% |
-| 4 | Meredith, United States | 6 | 9.8% |
-| 5 | Canary Wharf, United Kingdom | 4 | 6.6% |
-| 6 | Leeds, United Kingdom | 3 | 4.9% |
-| 7 | Frankfurt am Main, Germany | 3 | 4.9% |
-| 8 | Dublin, United States | 3 | 4.9% |
-| 9 | Eygelshoven, The Netherlands | 3 | 4.9% |
-| 10 | Belo Horizonte, Brazil | 3 | 4.9% |
-| 11 | Rowlett, United States | 3 | 4.9% |
-| 12 | Moreno, Argentina | 3 | 4.9% |
+| 1 | Gravelines, France | 86 | 43.7% |
+| 2 | Dublin, United States | 39 | 19.8% |
+| 3 | Eygelshoven, The Netherlands | 19 | 9.6% |
+| 4 | Frankfurt am Main, Germany | 14 | 7.1% |
+| 5 | Atlanta, United States | 14 | 7.1% |
+| 6 | Amsterdam, The Netherlands | 13 | 6.6% |
+| 7 | São Paulo, Brazil | 12 | 6.1% |
 
 ## Geolocation (max 15 IPs)
 | # | Source IP | Count | % | Location | Network / hint |
 | ---: | --- | ---: | ---: | --- | --- |
-| 1 | `81.110.171.250` | 9 | 14.8% | United Kingdom / England / Manchester / Vmcbbuk | No apparent signal |
-| 2 | `54.203.147.253` | 8 | 13.1% | United States / Oregon / Portland / AWS EC2 (us-west-2) | Hosting/Cloud (aws) |
-| 3 | `38.51.144.232` | 6 | 9.8% | United States / New Hampshire / Meredith / Conexon Connect | No apparent signal |
-| 4 | `192.248.150.180` | 4 | 6.6% | United Kingdom / England / Canary Wharf / Vultr Holdings LLC London | Hosting/Cloud (vultr) |
-| 5 | `85.217.140.33` | 4 | 6.6% | France / Hauts-de-France / Gravelines / Modat B.V | No apparent signal |
-| 6 | `193.163.125.205` | 3 | 4.9% | United Kingdom / England / Leeds / Constantine Cybersecurity LTD | No apparent signal |
-| 7 | `185.73.23.133` | 3 | 4.9% | Germany / Hesse / Frankfurt am Main / RUB LIR Inet2 | No apparent signal |
-| 8 | `3.131.24.55` | 3 | 4.9% | United States / Ohio / Dublin / AWS EC2 (us-east-2) | Hosting/Cloud (aws) |
-| 9 | `204.76.203.4` | 3 | 4.9% | The Netherlands / Limburg / Eygelshoven / Intelligence Hosting LLC | No apparent signal |
-| 10 | `177.128.174.242` | 3 | 4.9% | Brazil / Minas Gerais / Belo Horizonte / Lsnetwoks Solutions | No apparent signal |
-| 11 | `85.217.140.35` | 3 | 4.9% | France / Hauts-de-France / Gravelines / Modat B.V | No apparent signal |
-| 12 | `85.217.140.30` | 3 | 4.9% | France / Hauts-de-France / Gravelines / Modat B.V | No apparent signal |
-| 13 | `66.69.123.191` | 3 | 4.9% | United States / Texas / Rowlett / Spectrum | No apparent signal |
-| 14 | `168.196.246.184` | 3 | 4.9% | Argentina / Buenos Aires / Moreno / Linkear SRL | No apparent signal |
-| 15 | `85.217.140.29` | 3 | 4.9% | France / Hauts-de-France / Gravelines / Modat B.V | No apparent signal |
+| 1 | `204.76.203.4` | 19 | 9.6% | The Netherlands / Limburg / Eygelshoven / Intelligence Hosting LLC | No apparent signal |
+| 2 | `18.119.209.50` | 15 | 7.6% | United States / Ohio / Dublin / AWS EC2 (us-east-2) | Hosting/Cloud (aws) |
+| 3 | `85.217.140.27` | 14 | 7.1% | France / Hauts-de-France / Gravelines / Modat B.V | No apparent signal |
+| 4 | `85.217.140.35` | 14 | 7.1% | France / Hauts-de-France / Gravelines / Modat B.V | No apparent signal |
+| 5 | `151.243.11.240` | 14 | 7.1% | Germany / Hesse / Frankfurt am Main / Private Customer | No apparent signal |
+| 6 | `172.110.223.179` | 14 | 7.1% | United States / Georgia / Atlanta / Dedires LLC | No apparent signal |
+| 7 | `18.190.15.50` | 13 | 6.6% | United States / Ohio / Dublin / AWS EC2 (us-east-2) | Hosting/Cloud (aws) |
+| 8 | `85.217.140.33` | 13 | 6.6% | France / Hauts-de-France / Gravelines / Modat B.V | No apparent signal |
+| 9 | `77.239.124.127` | 13 | 6.6% | The Netherlands / North Holland / Amsterdam / RocketCloud | No apparent signal |
+| 10 | `45.194.67.120` | 12 | 6.1% | Brazil / São Paulo / São Paulo / Cloud Innovation Ltd | No apparent signal |
+| 11 | `85.217.140.30` | 12 | 6.1% | France / Hauts-de-France / Gravelines / Modat B.V | No apparent signal |
+| 12 | `18.221.179.104` | 11 | 5.6% | United States / Ohio / Dublin / AWS EC2 (us-east-2) | Hosting/Cloud (aws) |
+| 13 | `85.217.140.28` | 11 | 5.6% | France / Hauts-de-France / Gravelines / Modat B.V | No apparent signal |
+| 14 | `85.217.140.20` | 11 | 5.6% | France / Hauts-de-France / Gravelines / Modat B.V | No apparent signal |
+| 15 | `85.217.140.29` | 11 | 5.6% | France / Hauts-de-France / Gravelines / Modat B.V | No apparent signal |
 
 ## VPN/Proxy/Hosting suspicion (heuristic)
 | # | Source IP | Count | % | Suspicion | Location |
 | ---: | --- | ---: | ---: | --- | --- |
-| 1 | `54.203.147.253` | 8 | 53.3% | Hosting/Cloud (aws) | United States / Oregon / Portland / AWS EC2 (us-west-2) |
-| 2 | `192.248.150.180` | 4 | 26.7% | Hosting/Cloud (vultr) | United Kingdom / England / Canary Wharf / Vultr Holdings LLC London |
-| 3 | `3.131.24.55` | 3 | 20.0% | Hosting/Cloud (aws) | United States / Ohio / Dublin / AWS EC2 (us-east-2) |
+| 1 | `18.119.209.50` | 15 | 38.5% | Hosting/Cloud (aws) | United States / Ohio / Dublin / AWS EC2 (us-east-2) |
+| 2 | `18.190.15.50` | 13 | 33.3% | Hosting/Cloud (aws) | United States / Ohio / Dublin / AWS EC2 (us-east-2) |
+| 3 | `18.221.179.104` | 11 | 28.2% | Hosting/Cloud (aws) | United States / Ohio / Dublin / AWS EC2 (us-east-2) |
 
 ## Charts
 ![Top destination ports](ufw_plots/ufw_top_ports.jpg)
