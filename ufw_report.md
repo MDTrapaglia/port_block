@@ -2,160 +2,160 @@
 
 - Log: `/var/log/ufw.log`
 - Window: last 24.0 hours
-- Total blocks: 4418
-- Unique source IPs: 2281
-- Unique countries/cities (24h): 305
-- Unique destination ports: 2760
+- Total blocks: 4474
+- Unique source IPs: 2301
+- Unique countries/cities (24h): 339
+- Unique destination ports: 2637
 
 ## Top destination ports
 | # | Destination port | Count | % |
 | ---: | --- | ---: | ---: |
-| 1 | `23` | 112 | 2.5% |
-| 2 | `22` | 68 | 1.5% |
-| 3 | `8080` | 39 | 0.9% |
-| 4 | `1433` | 35 | 0.8% |
-| 5 | `8081` | 29 | 0.7% |
-| 6 | `81` | 27 | 0.6% |
-| 7 | `5060` | 26 | 0.6% |
-| 8 | `53` | 24 | 0.5% |
-| 9 | `8443` | 23 | 0.5% |
-| 10 | `3389` | 21 | 0.5% |
-| 11 | `8000` | 20 | 0.5% |
-| 12 | `2222` | 16 | 0.4% |
-| 13 | `123` | 15 | 0.3% |
-| 14 | `6379` | 14 | 0.3% |
-| 15 | `11211` | 14 | 0.3% |
+| 1 | `23` | 114 | 2.5% |
+| 2 | `22` | 99 | 2.2% |
+| 3 | `8080` | 34 | 0.8% |
+| 4 | `1433` | 31 | 0.7% |
+| 5 | `5060` | 30 | 0.7% |
+| 6 | `8443` | 28 | 0.6% |
+| 7 | `3389` | 23 | 0.5% |
+| 8 | `81` | 21 | 0.5% |
+| 9 | `161` | 20 | 0.4% |
+| 10 | `53` | 20 | 0.4% |
+| 11 | `1723` | 20 | 0.4% |
+| 12 | `3306` | 20 | 0.4% |
+| 13 | `9200` | 19 | 0.4% |
+| 14 | `8081` | 19 | 0.4% |
+| 15 | `9000` | 18 | 0.4% |
 
 ## Top protocols
 | # | Protocol | Count | % |
 | ---: | --- | ---: | ---: |
-| 1 | `TCP` | 4020 | 91.0% |
-| 2 | `UDP` | 393 | 8.9% |
-| 3 | `47` | 4 | 0.1% |
-| 4 | `41` | 1 | 0.0% |
+| 1 | `TCP` | 4039 | 90.3% |
+| 2 | `UDP` | 427 | 9.5% |
+| 3 | `47` | 7 | 0.2% |
+| 4 | `4` | 1 | 0.0% |
 
 ## Top source IPs
 | # | Source IP | Count | % |
 | ---: | --- | ---: | ---: |
-| 1 | `192.99.16.45` | 303 | 6.9% |
-| 2 | `222.255.117.65` | 56 | 1.3% |
-| 3 | `151.101.218.13` | 40 | 0.9% |
-| 4 | `85.217.140.18` | 18 | 0.4% |
-| 5 | `45.198.224.125` | 17 | 0.4% |
-| 6 | `85.217.140.23` | 16 | 0.4% |
-| 7 | `204.76.203.219` | 16 | 0.4% |
-| 8 | `79.124.40.162` | 16 | 0.4% |
-| 9 | `91.231.89.130` | 15 | 0.3% |
-| 10 | `94.183.174.99` | 14 | 0.3% |
-| 11 | `91.231.89.205` | 14 | 0.3% |
-| 12 | `91.231.89.150` | 13 | 0.3% |
-| 13 | `18.190.15.50` | 13 | 0.3% |
-| 14 | `141.98.83.48` | 13 | 0.3% |
-| 15 | `91.231.89.238` | 13 | 0.3% |
+| 1 | `151.101.218.13` | 50 | 1.1% |
+| 2 | `108.181.20.142` | 34 | 0.8% |
+| 3 | `108.181.2.247` | 29 | 0.6% |
+| 4 | `216.180.246.74` | 28 | 0.6% |
+| 5 | `204.76.203.219` | 22 | 0.5% |
+| 6 | `85.217.140.27` | 19 | 0.4% |
+| 7 | `195.184.76.175` | 17 | 0.4% |
+| 8 | `108.181.9.218` | 17 | 0.4% |
+| 9 | `195.184.76.20` | 17 | 0.4% |
+| 10 | `91.231.89.72` | 16 | 0.4% |
+| 11 | `91.231.89.104` | 16 | 0.4% |
+| 12 | `195.184.76.71` | 16 | 0.4% |
+| 13 | `142.93.207.96` | 16 | 0.4% |
+| 14 | `91.230.168.129` | 15 | 0.3% |
+| 15 | `91.231.89.130` | 15 | 0.3% |
 
 ## Top TCP flag patterns
 | # | Flags | Count | % |
 | ---: | --- | ---: | ---: |
-| 1 | `SYN` | 3854 | 95.9% |
-| 2 | `ACK+FIN+PSH` | 90 | 2.2% |
+| 1 | `SYN` | 3829 | 94.8% |
+| 2 | `ACK+FIN+PSH` | 141 | 3.5% |
 | 3 | `ACK+PSH` | 45 | 1.1% |
-| 4 | `SYN+ECE+CWR` | 14 | 0.3% |
-| 5 | `ACK+FIN` | 9 | 0.2% |
-| 6 | `ACK` | 8 | 0.2% |
+| 4 | `ACK+FIN` | 19 | 0.5% |
+| 5 | `SYN+ECE+CWR` | 4 | 0.1% |
+| 6 | `ACK` | 1 | 0.0% |
 
 ## Top inbound interfaces (IN)
 | # | Interface | Count | % |
 | ---: | --- | ---: | ---: |
-| 1 | `eth0` | 4418 | 100.0% |
+| 1 | `eth0` | 4474 | 100.0% |
 
 ## Top source IP -> destination port
 | # | Source IP -> port | Count | % |
 | ---: | --- | ---: | ---: |
-| 1 | `45.205.1.160` -> `6036` | 10 | 0.2% |
+| 1 | `45.198.224.124` -> `81` | 10 | 0.2% |
 | 2 | `45.205.1.163` -> `17000` | 9 | 0.2% |
-| 3 | `45.198.224.125` -> `8081` | 7 | 0.2% |
-| 4 | `45.198.224.125` -> `9090` | 7 | 0.2% |
-| 5 | `91.224.92.28` -> `34567` | 7 | 0.2% |
-| 6 | `151.101.218.13` -> `54820` | 7 | 0.2% |
-| 7 | `151.101.218.13` -> `32871` | 7 | 0.2% |
-| 8 | `45.198.224.124` -> `81` | 6 | 0.1% |
-| 9 | `151.101.216.159` -> `42462` | 6 | 0.1% |
-| 10 | `201.20.85.122` -> `6379` | 6 | 0.1% |
-| 11 | `170.51.241.171` -> `54676` | 6 | 0.1% |
-| 12 | `151.101.218.13` -> `31833` | 6 | 0.1% |
-| 13 | `216.180.246.22` -> `80` | 6 | 0.1% |
-| 14 | `94.183.174.99` -> `8080` | 5 | 0.1% |
-| 15 | `204.76.203.237` -> `81` | 5 | 0.1% |
+| 3 | `170.51.247.42` -> `36991` | 8 | 0.2% |
+| 4 | `80.66.83.83` -> `5405` | 7 | 0.2% |
+| 5 | `151.101.218.13` -> `38181` | 7 | 0.2% |
+| 6 | `151.101.218.13` -> `41649` | 7 | 0.2% |
+| 7 | `45.198.224.125` -> `8081` | 6 | 0.1% |
+| 8 | `151.101.218.13` -> `61501` | 6 | 0.1% |
+| 9 | `151.101.218.13` -> `37859` | 6 | 0.1% |
+| 10 | `66.132.195.161` -> `587` | 6 | 0.1% |
+| 11 | `184.31.2.82` -> `40323` | 6 | 0.1% |
+| 12 | `216.180.246.74` -> `55443` | 6 | 0.1% |
+| 13 | `216.180.246.74` -> `55555` | 6 | 0.1% |
+| 14 | `45.205.1.160` -> `6036` | 5 | 0.1% |
+| 15 | `201.20.85.122` -> `6379` | 5 | 0.1% |
 
 ## Blocks per hour (UTC)
 | Hour (UTC) | Count | % |
 | :--- | ---: | ---: |
-| 2026-10-06 04:00:00:00 | 134 | 3.0% |
-| 2026-10-06 05:00:00:00 | 177 | 4.0% |
-| 2026-10-06 06:00:00:00 | 183 | 4.1% |
-| 2026-10-06 07:00:00:00 | 187 | 4.2% |
-| 2026-10-06 08:00:00:00 | 179 | 4.1% |
-| 2026-10-06 09:00:00:00 | 179 | 4.1% |
-| 2026-10-06 10:00:00:00 | 182 | 4.1% |
-| 2026-10-06 11:00:00:00 | 202 | 4.6% |
-| 2026-10-06 12:00:00:00 | 195 | 4.4% |
-| 2026-10-06 13:00:00:00 | 190 | 4.3% |
-| 2026-10-06 14:00:00:00 | 181 | 4.1% |
-| 2026-10-06 15:00:00:00 | 178 | 4.0% |
-| 2026-10-06 16:00:00:00 | 180 | 4.1% |
-| 2026-10-06 17:00:00:00 | 182 | 4.1% |
-| 2026-10-06 18:00:00:00 | 180 | 4.1% |
-| 2026-10-06 19:00:00:00 | 179 | 4.1% |
-| 2026-10-06 20:00:00:00 | 180 | 4.1% |
-| 2026-10-06 21:00:00:00 | 180 | 4.1% |
-| 2026-10-06 22:00:00:00 | 201 | 4.5% |
-| 2026-10-06 23:00:00:00 | 180 | 4.1% |
-| 2026-10-07 00:00:00:00 | 182 | 4.1% |
-| 2026-10-07 01:00:00:00 | 190 | 4.3% |
-| 2026-10-07 02:00:00:00 | 184 | 4.2% |
-| 2026-10-07 03:00:00:00 | 188 | 4.3% |
-| 2026-10-07 04:00:00:00 | 45 | 1.0% |
+| 2026-10-07 04:00:00:00 | 135 | 3.0% |
+| 2026-10-07 05:00:00:00 | 179 | 4.0% |
+| 2026-10-07 06:00:00:00 | 181 | 4.0% |
+| 2026-10-07 07:00:00:00 | 180 | 4.0% |
+| 2026-10-07 08:00:00:00 | 180 | 4.0% |
+| 2026-10-07 09:00:00:00 | 180 | 4.0% |
+| 2026-10-07 10:00:00:00 | 176 | 3.9% |
+| 2026-10-07 11:00:00:00 | 180 | 4.0% |
+| 2026-10-07 12:00:00:00 | 178 | 4.0% |
+| 2026-10-07 13:00:00:00 | 180 | 4.0% |
+| 2026-10-07 14:00:00:00 | 210 | 4.7% |
+| 2026-10-07 15:00:00:00 | 207 | 4.6% |
+| 2026-10-07 16:00:00:00 | 227 | 5.1% |
+| 2026-10-07 17:00:00:00 | 180 | 4.0% |
+| 2026-10-07 18:00:00:00 | 179 | 4.0% |
+| 2026-10-07 19:00:00:00 | 196 | 4.4% |
+| 2026-10-07 20:00:00:00 | 177 | 4.0% |
+| 2026-10-07 21:00:00:00 | 183 | 4.1% |
+| 2026-10-07 22:00:00:00 | 182 | 4.1% |
+| 2026-10-07 23:00:00:00 | 180 | 4.0% |
+| 2026-10-08 00:00:00:00 | 209 | 4.7% |
+| 2026-10-08 01:00:00:00 | 179 | 4.0% |
+| 2026-10-08 02:00:00:00 | 179 | 4.0% |
+| 2026-10-08 03:00:00:00 | 191 | 4.3% |
+| 2026-10-08 04:00:00:00 | 46 | 1.0% |
 
 ## Top source countries/cities
 | # | Location | Count | % |
 | ---: | --- | ---: | ---: |
-| 1 | Montreal, Canada | 303 | 52.5% |
-| 2 | Gravelines, France | 89 | 15.4% |
-| 3 | Ho Chi Minh City, Vietnam | 56 | 9.7% |
-| 4 | Buenos Aires, Argentina | 40 | 6.9% |
-| 5 | Stockholm, Sweden | 17 | 2.9% |
-| 6 | Eygelshoven, Netherlands | 16 | 2.8% |
-| 7 | Sopot, Bulgaria | 16 | 2.8% |
-| 8 | Hauzenberg, Germany | 14 | 2.4% |
-| 9 | Dublin, United States | 13 | 2.3% |
-| 10 | Panama City, Panama | 13 | 2.3% |
+| 1 | Los Angeles, United States | 80 | 24.5% |
+| 2 | Gravelines, France | 66 | 20.2% |
+| 3 | Buenos Aires, Argentina | 50 | 15.3% |
+| 4 | Warrenton, United States | 50 | 15.3% |
+| 5 | Massy, France | 28 | 8.6% |
+| 6 | Eygelshoven, Netherlands | 22 | 6.7% |
+| 7 | North Bergen, United States | 16 | 4.9% |
+| 8 | Hillsboro, United States | 15 | 4.6% |
 
 ## Geolocation (max 15 IPs)
 | # | Source IP | Count | % | Location | Network / hint |
 | ---: | --- | ---: | ---: | --- | --- |
-| 1 | `192.99.16.45` | 303 | 52.5% | Canada / Quebec / Montreal / OVH Hosting, Inc. | Hosting/Cloud (ovh) |
-| 2 | `222.255.117.65` | 56 | 9.7% | Vietnam / Ho Chi Minh City (HCMC) / Ho Chi Minh City / VietNam Data Communication Company | No apparent signal |
-| 3 | `151.101.218.13` | 40 | 6.9% | Argentina / Buenos Aires F.D. / Buenos Aires / Fastly, Inc. | CDN/Edge (fastly) |
-| 4 | `85.217.140.18` | 18 | 3.1% | France / Hauts-de-France / Gravelines / Modat B.V | No apparent signal |
-| 5 | `45.198.224.125` | 17 | 2.9% | Sweden / Stockholm County / Stockholm / Vpsvault.host LTD | No apparent signal |
-| 6 | `85.217.140.23` | 16 | 2.8% | France / Hauts-de-France / Gravelines / Modat B.V | No apparent signal |
-| 7 | `204.76.203.219` | 16 | 2.8% | Netherlands / Limburg / Eygelshoven / Intelligence Hosting LLC | No apparent signal |
-| 8 | `79.124.40.162` | 16 | 2.8% | Bulgaria / Plovdiv / Sopot / Tamatiya EOOD | No apparent signal |
-| 9 | `91.231.89.130` | 15 | 2.6% | France / Hauts-de-France / Gravelines / ONYPHE | No apparent signal |
-| 10 | `94.183.174.99` | 14 | 2.4% | Germany / Bavaria / Hauzenberg / Pfcloud UG | No apparent signal |
-| 11 | `91.231.89.205` | 14 | 2.4% | France / Hauts-de-France / Gravelines / ONYPHE | No apparent signal |
-| 12 | `91.231.89.150` | 13 | 2.3% | France / Hauts-de-France / Gravelines / ONYPHE | No apparent signal |
-| 13 | `18.190.15.50` | 13 | 2.3% | United States / Ohio / Dublin / AWS EC2 (us-east-2) | Hosting/Cloud (aws) |
-| 14 | `141.98.83.48` | 13 | 2.3% | Panama / Provincia de Panamá / Panama City / GLOBALHOST | Hosting/Cloud (servers) |
-| 15 | `91.231.89.238` | 13 | 2.3% | France / Hauts-de-France / Gravelines / ONYPHE | No apparent signal |
+| 1 | `151.101.218.13` | 50 | 15.3% | Argentina / Buenos Aires F.D. / Buenos Aires / Fastly, Inc. | CDN/Edge (fastly) |
+| 2 | `108.181.20.142` | 34 | 10.4% | United States / California / Los Angeles / TELUS Communications Inc. | Hosting/Cloud (psychz) |
+| 3 | `108.181.2.247` | 29 | 8.9% | United States / California / Los Angeles / TELUS Communications Inc. | Hosting/Cloud (psychz) |
+| 4 | `216.180.246.74` | 28 | 8.6% | France / Île-de-France / Massy / Google LLC | Hosting/Cloud (google llc) |
+| 5 | `204.76.203.219` | 22 | 6.7% | Netherlands / Limburg / Eygelshoven / Intelligence Hosting LLC | No apparent signal |
+| 6 | `85.217.140.27` | 19 | 5.8% | France / Hauts-de-France / Gravelines / Modat B.V | No apparent signal |
+| 7 | `195.184.76.175` | 17 | 5.2% | United States / Virginia / Warrenton / ONYPHE | No apparent signal |
+| 8 | `108.181.9.218` | 17 | 5.2% | United States / California / Los Angeles / TELUS Communications Inc. | Hosting/Cloud (psychz) |
+| 9 | `195.184.76.20` | 17 | 5.2% | United States / Virginia / Warrenton / ONYPHE | No apparent signal |
+| 10 | `91.231.89.72` | 16 | 4.9% | France / Hauts-de-France / Gravelines / ONYPHE | No apparent signal |
+| 11 | `91.231.89.104` | 16 | 4.9% | France / Hauts-de-France / Gravelines / ONYPHE | No apparent signal |
+| 12 | `195.184.76.71` | 16 | 4.9% | United States / Virginia / Warrenton / ONYPHE | No apparent signal |
+| 13 | `142.93.207.96` | 16 | 4.9% | United States / New Jersey / North Bergen / DigitalOcean, LLC | Hosting/Cloud (digitalocean) |
+| 14 | `91.230.168.129` | 15 | 4.6% | United States / Oregon / Hillsboro / ONYPHE | No apparent signal |
+| 15 | `91.231.89.130` | 15 | 4.6% | France / Hauts-de-France / Gravelines / ONYPHE | No apparent signal |
 
 ## VPN/Proxy/Hosting suspicion (heuristic)
 | # | Source IP | Count | % | Suspicion | Location |
 | ---: | --- | ---: | ---: | --- | --- |
-| 1 | `192.99.16.45` | 303 | 82.1% | Hosting/Cloud (ovh) | Canada / Quebec / Montreal / OVH Hosting, Inc. |
-| 2 | `151.101.218.13` | 40 | 10.8% | CDN/Edge (fastly) | Argentina / Buenos Aires F.D. / Buenos Aires / Fastly, Inc. |
-| 3 | `18.190.15.50` | 13 | 3.5% | Hosting/Cloud (aws) | United States / Ohio / Dublin / AWS EC2 (us-east-2) |
-| 4 | `141.98.83.48` | 13 | 3.5% | Hosting/Cloud (servers) | Panama / Provincia de Panamá / Panama City / GLOBALHOST |
+| 1 | `151.101.218.13` | 50 | 28.7% | CDN/Edge (fastly) | Argentina / Buenos Aires F.D. / Buenos Aires / Fastly, Inc. |
+| 2 | `108.181.20.142` | 34 | 19.5% | Hosting/Cloud (psychz) | United States / California / Los Angeles / TELUS Communications Inc. |
+| 3 | `108.181.2.247` | 29 | 16.7% | Hosting/Cloud (psychz) | United States / California / Los Angeles / TELUS Communications Inc. |
+| 4 | `216.180.246.74` | 28 | 16.1% | Hosting/Cloud (google llc) | France / Île-de-France / Massy / Google LLC |
+| 5 | `108.181.9.218` | 17 | 9.8% | Hosting/Cloud (psychz) | United States / California / Los Angeles / TELUS Communications Inc. |
+| 6 | `142.93.207.96` | 16 | 9.2% | Hosting/Cloud (digitalocean) | United States / New Jersey / North Bergen / DigitalOcean, LLC |
 
 ## Charts
 ![Top destination ports](ufw_plots/ufw_top_ports.jpg)
