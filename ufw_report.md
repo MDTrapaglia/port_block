@@ -2,160 +2,159 @@
 
 - Log: `/var/log/ufw.log`
 - Window: last 24.0 hours
-- Total blocks: 4364
-- Unique source IPs: 2647
-- Unique countries/cities (24h): 493
-- Unique destination ports: 1638
+- Total blocks: 4405
+- Unique source IPs: 2631
+- Unique countries/cities (24h): 551
+- Unique destination ports: 1425
 
 ## Top destination ports
 | # | Destination port | Count | % |
 | ---: | --- | ---: | ---: |
-| 1 | `23` | 1911 | 43.8% |
-| 2 | `22` | 46 | 1.1% |
-| 3 | `8080` | 25 | 0.6% |
-| 4 | `3389` | 24 | 0.5% |
-| 5 | `5060` | 18 | 0.4% |
-| 6 | `53` | 17 | 0.4% |
+| 1 | `23` | 2243 | 50.9% |
+| 2 | `22` | 41 | 0.9% |
+| 3 | `5060` | 28 | 0.6% |
+| 4 | `53` | 22 | 0.5% |
+| 5 | `8080` | 18 | 0.4% |
+| 6 | `3389` | 17 | 0.4% |
 | 7 | `8443` | 14 | 0.3% |
-| 8 | `1433` | 12 | 0.3% |
-| 9 | `3306` | 11 | 0.3% |
-| 10 | `110` | 11 | 0.3% |
-| 11 | `21` | 11 | 0.3% |
-| 12 | `81` | 11 | 0.3% |
-| 13 | `9000` | 11 | 0.3% |
-| 14 | `2000` | 10 | 0.2% |
-| 15 | `161` | 10 | 0.2% |
+| 8 | `161` | 13 | 0.3% |
+| 9 | `81` | 11 | 0.2% |
+| 10 | `8000` | 10 | 0.2% |
+| 11 | `8081` | 10 | 0.2% |
+| 12 | `1433` | 9 | 0.2% |
+| 13 | `3306` | 9 | 0.2% |
+| 14 | `25` | 9 | 0.2% |
+| 15 | `6379` | 8 | 0.2% |
 
 ## Top protocols
 | # | Protocol | Count | % |
 | ---: | --- | ---: | ---: |
-| 1 | `TCP` | 4168 | 95.5% |
-| 2 | `UDP` | 193 | 4.4% |
-| 3 | `47` | 3 | 0.1% |
+| 1 | `TCP` | 4195 | 95.2% |
+| 2 | `UDP` | 205 | 4.7% |
+| 3 | `47` | 5 | 0.1% |
 
 ## Top source IPs
 | # | Source IP | Count | % |
 | ---: | --- | ---: | ---: |
-| 1 | `116.208.67.23` | 91 | 2.1% |
-| 2 | `121.57.71.54` | 74 | 1.7% |
-| 3 | `196.189.130.28` | 73 | 1.7% |
-| 4 | `123.165.80.41` | 72 | 1.6% |
-| 5 | `119.99.249.169` | 72 | 1.6% |
-| 6 | `222.127.63.230` | 70 | 1.6% |
-| 7 | `77.91.71.26` | 56 | 1.3% |
-| 8 | `5.101.140.66` | 55 | 1.3% |
-| 9 | `42.100.26.85` | 53 | 1.2% |
-| 10 | `16.5.0.240` | 30 | 0.7% |
-| 11 | `138.117.120.230` | 19 | 0.4% |
-| 12 | `175.0.21.74` | 16 | 0.4% |
-| 13 | `112.103.63.242` | 15 | 0.3% |
-| 14 | `185.149.235.44` | 14 | 0.3% |
-| 15 | `23.129.232.164` | 13 | 0.3% |
+| 1 | `24.152.7.98` | 81 | 1.8% |
+| 2 | `123.173.90.220` | 68 | 1.5% |
+| 3 | `222.127.243.18` | 65 | 1.5% |
+| 4 | `116.207.115.184` | 58 | 1.3% |
+| 5 | `5.237.91.18` | 57 | 1.3% |
+| 6 | `175.9.134.159` | 56 | 1.3% |
+| 7 | `2.180.132.225` | 53 | 1.2% |
+| 8 | `222.217.26.133` | 51 | 1.2% |
+| 9 | `119.99.251.151` | 49 | 1.1% |
+| 10 | `59.180.176.51` | 42 | 1.0% |
+| 11 | `42.100.27.130` | 36 | 0.8% |
+| 12 | `151.101.218.13` | 33 | 0.7% |
+| 13 | `171.114.225.97` | 27 | 0.6% |
+| 14 | `175.43.119.91` | 26 | 0.6% |
+| 15 | `118.249.40.234` | 22 | 0.5% |
 
 ## Top TCP flag patterns
 | # | Flags | Count | % |
 | ---: | --- | ---: | ---: |
-| 1 | `SYN` | 4103 | 98.4% |
-| 2 | `ACK+FIN+PSH` | 42 | 1.0% |
-| 3 | `ACK+PSH` | 10 | 0.2% |
-| 4 | `ACK` | 7 | 0.2% |
-| 5 | `ACK+FIN` | 3 | 0.1% |
-| 6 | `SYN+ECE+CWR` | 3 | 0.1% |
+| 1 | `SYN` | 4096 | 97.6% |
+| 2 | `ACK+FIN+PSH` | 78 | 1.9% |
+| 3 | `ACK+PSH` | 11 | 0.3% |
+| 4 | `ACK+FIN` | 6 | 0.1% |
+| 5 | `SYN+ECE+CWR` | 4 | 0.1% |
 
 ## Top inbound interfaces (IN)
 | # | Interface | Count | % |
 | ---: | --- | ---: | ---: |
-| 1 | `eth0` | 4364 | 100.0% |
+| 1 | `eth0` | 4405 | 100.0% |
 
 ## Top source IP -> destination port
 | # | Source IP -> port | Count | % |
 | ---: | --- | ---: | ---: |
-| 1 | `116.208.67.23` -> `23` | 91 | 2.1% |
-| 2 | `121.57.71.54` -> `23` | 74 | 1.7% |
-| 3 | `196.189.130.28` -> `23` | 73 | 1.7% |
-| 4 | `123.165.80.41` -> `23` | 72 | 1.6% |
-| 5 | `119.99.249.169` -> `23` | 72 | 1.6% |
-| 6 | `222.127.63.230` -> `23` | 70 | 1.6% |
-| 7 | `42.100.26.85` -> `23` | 53 | 1.2% |
-| 8 | `138.117.120.230` -> `23` | 19 | 0.4% |
-| 9 | `175.0.21.74` -> `23` | 16 | 0.4% |
-| 10 | `112.103.63.242` -> `23` | 15 | 0.3% |
-| 11 | `176.91.225.174` -> `23` | 11 | 0.3% |
-| 12 | `105.186.221.67` -> `23` | 10 | 0.2% |
-| 13 | `118.42.236.23` -> `23` | 9 | 0.2% |
-| 14 | `201.110.177.47` -> `23` | 9 | 0.2% |
-| 15 | `151.101.218.13` -> `50096` | 8 | 0.2% |
+| 1 | `24.152.7.98` -> `23` | 81 | 1.8% |
+| 2 | `123.173.90.220` -> `23` | 68 | 1.5% |
+| 3 | `222.127.243.18` -> `23` | 65 | 1.5% |
+| 4 | `116.207.115.184` -> `23` | 58 | 1.3% |
+| 5 | `5.237.91.18` -> `23` | 57 | 1.3% |
+| 6 | `175.9.134.159` -> `23` | 56 | 1.3% |
+| 7 | `2.180.132.225` -> `23` | 53 | 1.2% |
+| 8 | `222.217.26.133` -> `23` | 51 | 1.2% |
+| 9 | `119.99.251.151` -> `23` | 49 | 1.1% |
+| 10 | `59.180.176.51` -> `23` | 42 | 1.0% |
+| 11 | `42.100.27.130` -> `23` | 36 | 0.8% |
+| 12 | `171.114.225.97` -> `23` | 27 | 0.6% |
+| 13 | `175.43.119.91` -> `23` | 26 | 0.6% |
+| 14 | `118.249.40.234` -> `23` | 22 | 0.5% |
+| 15 | `45.238.26.39` -> `23` | 20 | 0.5% |
 
 ## Blocks per hour (UTC)
 | Hour (UTC) | Count | % |
 | :--- | ---: | ---: |
-| 2026-10-18 04:00:00:00 | 139 | 3.2% |
-| 2026-10-18 05:00:00:00 | 180 | 4.1% |
-| 2026-10-18 06:00:00:00 | 178 | 4.1% |
-| 2026-10-18 07:00:00:00 | 182 | 4.2% |
-| 2026-10-18 08:00:00:00 | 179 | 4.1% |
-| 2026-10-18 09:00:00:00 | 181 | 4.1% |
-| 2026-10-18 10:00:00:00 | 180 | 4.1% |
-| 2026-10-18 11:00:00:00 | 180 | 4.1% |
-| 2026-10-18 12:00:00:00 | 180 | 4.1% |
-| 2026-10-18 13:00:00:00 | 179 | 4.1% |
-| 2026-10-18 14:00:00:00 | 180 | 4.1% |
-| 2026-10-18 15:00:00:00 | 181 | 4.1% |
-| 2026-10-18 16:00:00:00 | 180 | 4.1% |
-| 2026-10-18 17:00:00:00 | 179 | 4.1% |
-| 2026-10-18 18:00:00:00 | 181 | 4.1% |
-| 2026-10-18 19:00:00:00 | 180 | 4.1% |
-| 2026-10-18 20:00:00:00 | 178 | 4.1% |
-| 2026-10-18 21:00:00:00 | 181 | 4.1% |
-| 2026-10-18 22:00:00:00 | 197 | 4.5% |
-| 2026-10-18 23:00:00:00 | 199 | 4.6% |
-| 2026-10-19 00:00:00:00 | 179 | 4.1% |
-| 2026-10-19 01:00:00:00 | 183 | 4.2% |
-| 2026-10-19 02:00:00:00 | 183 | 4.2% |
-| 2026-10-19 03:00:00:00 | 180 | 4.1% |
-| 2026-10-19 04:00:00:00 | 45 | 1.0% |
+| 2026-10-19 04:00:00:00 | 136 | 3.1% |
+| 2026-10-19 05:00:00:00 | 179 | 4.1% |
+| 2026-10-19 06:00:00:00 | 181 | 4.1% |
+| 2026-10-19 07:00:00:00 | 190 | 4.3% |
+| 2026-10-19 08:00:00:00 | 195 | 4.4% |
+| 2026-10-19 09:00:00:00 | 183 | 4.2% |
+| 2026-10-19 10:00:00:00 | 205 | 4.7% |
+| 2026-10-19 11:00:00:00 | 178 | 4.0% |
+| 2026-10-19 12:00:00:00 | 182 | 4.1% |
+| 2026-10-19 13:00:00:00 | 180 | 4.1% |
+| 2026-10-19 14:00:00:00 | 179 | 4.1% |
+| 2026-10-19 15:00:00:00 | 181 | 4.1% |
+| 2026-10-19 16:00:00:00 | 180 | 4.1% |
+| 2026-10-19 17:00:00:00 | 180 | 4.1% |
+| 2026-10-19 18:00:00:00 | 186 | 4.2% |
+| 2026-10-19 19:00:00:00 | 180 | 4.1% |
+| 2026-10-19 20:00:00:00 | 182 | 4.1% |
+| 2026-10-19 21:00:00:00 | 181 | 4.1% |
+| 2026-10-19 22:00:00:00 | 189 | 4.3% |
+| 2026-10-19 23:00:00:00 | 180 | 4.1% |
+| 2026-10-20 00:00:00:00 | 180 | 4.1% |
+| 2026-10-20 01:00:00:00 | 179 | 4.1% |
+| 2026-10-20 02:00:00:00 | 194 | 4.4% |
+| 2026-10-20 03:00:00:00 | 179 | 4.1% |
+| 2026-10-20 04:00:00:00 | 46 | 1.0% |
 
 ## Top source countries/cities
 | # | Location | Count | % |
 | ---: | --- | ---: | ---: |
-| 1 | Shizishan, China | 163 | 22.5% |
-| 2 | Harbin, China | 140 | 19.4% |
-| 3 | Hechi, China | 74 | 10.2% |
-| 4 | Addis Ababa, Ethiopia | 73 | 10.1% |
-| 5 | Lahug, Philippines | 70 | 9.7% |
-| 6 | Tel Aviv, Israel | 56 | 7.7% |
-| 7 | London, United Kingdom | 55 | 7.6% |
-| 8 | São Paulo, Brazil | 30 | 4.1% |
-| 9 | Kansas City, United States | 27 | 3.7% |
-| 10 | Assis, Brazil | 19 | 2.6% |
-| 11 | Changsha, China | 16 | 2.2% |
+| 1 | Shizishan, China | 134 | 18.5% |
+| 2 | Manaus, Brazil | 81 | 11.2% |
+| 3 | Jilin, China | 68 | 9.4% |
+| 4 | Iloilo City, Philippines | 65 | 9.0% |
+| 5 | Karaj, Iran | 57 | 7.9% |
+| 6 | Changsha, China | 56 | 7.7% |
+| 7 | Tehran, Iran | 53 | 7.3% |
+| 8 | Liuzhou, China | 51 | 7.0% |
+| 9 | New Delhi, India | 42 | 5.8% |
+| 10 | Harbin, China | 36 | 5.0% |
+| 11 | Buenos Aires, Argentina | 33 | 4.6% |
+| 12 | Quanzhou, China | 26 | 3.6% |
+| 13 | Qingyuan, China | 22 | 3.0% |
 
 ## Geolocation (max 15 IPs)
 | # | Source IP | Count | % | Location | Network / hint |
 | ---: | --- | ---: | ---: | --- | --- |
-| 1 | `116.208.67.23` | 91 | 12.6% | China / Hubei / Shizishan / Chinanet HB | No apparent signal |
-| 2 | `121.57.71.54` | 74 | 10.2% | China / Guangxi / Hechi / Neimeng Network of ChinaTelecom | No apparent signal |
-| 3 | `196.189.130.28` | 73 | 10.1% | Ethiopia / Addis Ababa / Addis Ababa / Ethiotelecom | VPN/Proxy suspected (pia) |
-| 4 | `123.165.80.41` | 72 | 10.0% | China / Heilongjiang / Harbin / Chinanet HL | No apparent signal |
-| 5 | `119.99.249.169` | 72 | 10.0% | China / Hubei / Shizishan / Chinanet HB | No apparent signal |
-| 6 | `222.127.63.230` | 70 | 9.7% | Philippines / Central Visayas / Lahug / Globe Telecom | No apparent signal |
-| 7 | `77.91.71.26` | 56 | 7.7% | Israel / Tel Aviv / Tel Aviv / NEW | No apparent signal |
-| 8 | `5.101.140.66` | 55 | 7.6% | United Kingdom / England / London / Hostmedialtd | Hosting/Cloud (servers) |
-| 9 | `42.100.26.85` | 53 | 7.3% | China / Heilongjiang / Harbin / Chinanet HL | No apparent signal |
-| 10 | `16.5.0.240` | 30 | 4.1% | Brazil / São Paulo / São Paulo / EMBNEX. LLC | No apparent signal |
-| 11 | `138.117.120.230` | 19 | 2.6% | Brazil / São Paulo / Assis / OnLine Assis Telecomunicações Ltda-EPP | No apparent signal |
-| 12 | `175.0.21.74` | 16 | 2.2% | China / Hunan / Changsha / Chinanet HN | No apparent signal |
-| 13 | `112.103.63.242` | 15 | 2.1% | China / Heilongjiang / Harbin / Chinanet HL | No apparent signal |
-| 14 | `185.149.235.44` | 14 | 1.9% | United States / Missouri / Kansas City / Heymman Servers Corporation | Hosting/Cloud (servers) |
-| 15 | `23.129.232.164` | 13 | 1.8% | United States / Missouri / Kansas City / Heymman Servers Corporation | Hosting/Cloud (servers) |
+| 1 | `24.152.7.98` | 81 | 11.2% | Brazil / Amazonas / Manaus / NEW CLICK TELECOMUNICACOES LTDA | Hosting/Cloud (amazon) |
+| 2 | `123.173.90.220` | 68 | 9.4% | China / Jilin / Jilin / Chinanet JL | No apparent signal |
+| 3 | `222.127.243.18` | 65 | 9.0% | Philippines / Western Visayas / Iloilo City / GLBB | No apparent signal |
+| 4 | `116.207.115.184` | 58 | 8.0% | China / Hubei / Shizishan / Chinanet HB | No apparent signal |
+| 5 | `5.237.91.18` | 57 | 7.9% | Iran / Alborz Province / Karaj / Telecommunication Company of Alborz | No apparent signal |
+| 6 | `175.9.134.159` | 56 | 7.7% | China / Hunan / Changsha / Chinanet HN | No apparent signal |
+| 7 | `2.180.132.225` | 53 | 7.3% | Iran / Tehran / Tehran / Telecommunication Company | No apparent signal |
+| 8 | `222.217.26.133` | 51 | 7.0% | China / Guangxi / Liuzhou / Chinanet GX | No apparent signal |
+| 9 | `119.99.251.151` | 49 | 6.8% | China / Hubei / Shizishan / Chinanet HB | No apparent signal |
+| 10 | `59.180.176.51` | 42 | 5.8% | India / National Capital Territory of Delhi / New Delhi / MTNL Mumbai | No apparent signal |
+| 11 | `42.100.27.130` | 36 | 5.0% | China / Heilongjiang / Harbin / Chinanet HL | No apparent signal |
+| 12 | `151.101.218.13` | 33 | 4.6% | Argentina / Buenos Aires F.D. / Buenos Aires / Fastly, Inc. | CDN/Edge (fastly) |
+| 13 | `171.114.225.97` | 27 | 3.7% | China / Hubei / Shizishan / Chinanet HB | No apparent signal |
+| 14 | `175.43.119.91` | 26 | 3.6% | China / Fujian / Quanzhou / China Unicom Fujian Province Network | No apparent signal |
+| 15 | `118.249.40.234` | 22 | 3.0% | China / Hunan / Qingyuan / Chinanet HN | No apparent signal |
 
 ## VPN/Proxy/Hosting suspicion (heuristic)
 | # | Source IP | Count | % | Suspicion | Location |
 | ---: | --- | ---: | ---: | --- | --- |
-| 1 | `196.189.130.28` | 73 | 47.1% | VPN/Proxy suspected (pia) | Ethiopia / Addis Ababa / Addis Ababa / Ethiotelecom |
-| 2 | `5.101.140.66` | 55 | 35.5% | Hosting/Cloud (servers) | United Kingdom / England / London / Hostmedialtd |
-| 3 | `185.149.235.44` | 14 | 9.0% | Hosting/Cloud (servers) | United States / Missouri / Kansas City / Heymman Servers Corporation |
-| 4 | `23.129.232.164` | 13 | 8.4% | Hosting/Cloud (servers) | United States / Missouri / Kansas City / Heymman Servers Corporation |
+| 1 | `24.152.7.98` | 81 | 71.1% | Hosting/Cloud (amazon) | Brazil / Amazonas / Manaus / NEW CLICK TELECOMUNICACOES LTDA |
+| 2 | `151.101.218.13` | 33 | 28.9% | CDN/Edge (fastly) | Argentina / Buenos Aires F.D. / Buenos Aires / Fastly, Inc. |
 
 ## Charts
 ![Top destination ports](ufw_plots/ufw_top_ports.jpg)
